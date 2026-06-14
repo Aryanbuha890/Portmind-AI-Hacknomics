@@ -1313,7 +1313,7 @@ function HowItWorks() {
 }
 
 function Ecosystem() {
-  const [activeNode, setActiveNode] = useState<string>("marine");
+  const [activeNode, setActiveNode] = useState<number | null>(null);
   const [livePulse, setLivePulse] = useState<number>(84);
 
   // Periodic metrics update
@@ -1327,86 +1327,110 @@ function Ecosystem() {
     return () => clearInterval(interval);
   }, []);
 
-  const nodes = [
+  const cards = [
     {
-      id: "marine",
-      name: "Marine Command",
-      desc: "Autonomous vessel berthing corridors, speed advisories, and tide scheduling.",
+      id: 0,
+      title: "Terminal Operators",
+      index: "01",
+      icon: Cpu,
+      color: "#3B82F6", // Blue
+      coreCode: "T-OPS",
+      description: "Dynamic stacking distribution algorithms and density balancing.",
+      metrics: [
+        { label: "Yard Turnaround", value: "+32% Efficiency" },
+        { label: "Berth Occupancy", value: "92% Capacity" },
+        { label: "Dwell Times", value: "-25% Congestion" }
+      ],
+      agents: ["Block Allocator Bot", "Yard Density Balancer", "Reefer Guard AI"]
+    },
+    {
+      id: 1,
+      title: "Port Authorities",
+      index: "02",
       icon: Ship,
-      color: "#3B82F6",
-      x: 130,
-      y: 110,
-      agents: ["AIS Corridor Tracker", "Tide Window Optimizer", "Vessel Flow Agent"],
-      metrics: { primary: "Wait queue: 1.2h", secondary: "Occupancy: 92%" },
+      color: "#8B5CF6", // Purple
+      coreCode: "AUTH",
+      description: "Autonomous vessel berthing corridors, speed advisories, and tide scheduling.",
+      metrics: [
+        { label: "Vessel Queue", value: "1.2h Avg Waiting" },
+        { label: "Carbon Offset", value: "-14% Emissions" },
+        { label: "Uptime SLA", value: "99.99% Guaranteed" }
+      ],
+      agents: ["AIS Corridor Tracker", "Tide Window Optimizer", "Vessel Flow Agent"]
     },
     {
-      id: "yard",
-      name: "Yard Allocation",
-      desc: "Dynamic stacking distribution algorithms and reefer block temperature monitoring.",
-      icon: Container,
-      color: "#8B5CF6",
-      x: 90,
-      y: 250,
-      agents: ["Block Allocator Bot", "Yard Density Balancer", "Reefer Guard Agent"],
-      metrics: { primary: "Moves/hr: 34", secondary: "Dwell times: -25%" },
+      id: 2,
+      title: "Logistics Partners",
+      index: "03",
+      icon: Map,
+      color: "#10B981", // Emerald
+      coreCode: "LOGS",
+      description: "Automatic inbound lane routing and queue dispatch synchronization.",
+      metrics: [
+        { label: "Gate Dwell Time", value: "14m Avg Dwell" },
+        { label: "Truck Dispatch", value: "100% Synced" },
+        { label: "Slot Match Index", value: "99.1% Accuracy" }
+      ],
+      agents: ["OCR Gate Identifier", "Lane Congestion Router", "Truck Flow Agent"]
     },
     {
-      id: "crane",
-      name: "Crane Dispatch",
-      desc: "Predictive duty cycle scheduling and remaining useful life tracking.",
-      icon: Wrench,
-      color: "#10B981",
-      x: 170,
-      y: 390,
-      agents: ["Crane Dispatcher AI", "RUL Predictor Agent", "Hysteresis Alert Agent"],
-      metrics: { primary: "Util Rate: 76%", secondary: "Average Health: 94%" },
-    },
-    {
-      id: "gate",
-      name: "Gate Clearance",
-      desc: "Automatic inbound lane routing, optical character recognition and queue dispatch.",
-      icon: Compass,
-      color: "#F59E0B",
-      x: 430,
-      y: 390,
-      agents: ["OCR Gate Identifier", "Lane Congestion Router", "Truck Flow Agent"],
-      metrics: { primary: "Wait time: 11m", secondary: "Throughput: +12%" },
-    },
-    {
-      id: "customs",
-      name: "Customs Registry",
-      desc: "Instant customs clearing, document OCR parsing and fraud hazard alerts.",
-      icon: Database,
-      color: "#EC4899",
-      x: 510,
-      y: 250,
-      agents: ["Manifest Document AI", "HS Code Classifier", "DG Compliance Agent"],
-      metrics: { primary: "Clear Rate: 94%", secondary: "OCR Match: 99.8%" },
-    },
-    {
-      id: "safety",
-      name: "HSE Safety Guard",
-      desc: "Real-time PPE compliance checking, thermal scans and alert sirens control.",
+      id: 3,
+      title: "HSE Safety Teams",
+      index: "04",
       icon: ShieldAlert,
-      color: "#EF4444",
-      x: 470,
-      y: 110,
-      agents: ["PPE Safety Vision", "Thermal Incidents Agent", "Lockdown Dispatcher"],
-      metrics: { primary: "Safety: 99.2%", secondary: "Defcon: Nominal" },
+      color: "#EF4444", // Red
+      coreCode: "SAFE",
+      description: "Real-time PPE compliance checking and thermal incident warnings.",
+      metrics: [
+        { label: "PPE Compliance", value: "99.2% Detected" },
+        { label: "Active Hazards", value: "0 Open Incidents" },
+        { label: "Fire Watch Mode", value: "Active 24/7" }
+      ],
+      agents: ["PPE Safety Vision", "Thermal Incidents Agent", "Lockdown Dispatcher"]
     },
+    {
+      id: 4,
+      title: "Customs Officers",
+      index: "05",
+      icon: Database,
+      color: "#F59E0B", // Amber
+      coreCode: "CUST",
+      description: "Instant customs clearing, document OCR parsing, and fraud alerts.",
+      metrics: [
+        { label: "Auto-Clearance Rate", value: "94% Handled" },
+        { label: "HS Code Parsing", value: "99.8% Extraction" },
+        { label: "Fraud Alert Log", value: "0 Latency Flag" }
+      ],
+      agents: ["Manifest Document AI", "HS Code Classifier", "DG Compliance Agent"]
+    },
+    {
+      id: 5,
+      title: "Maritime Executive",
+      index: "06",
+      icon: Coins,
+      color: "#EC4899", // Pink
+      coreCode: "EXEC",
+      description: "Composite carbon composition, C-suite briefing summaries and direct savings.",
+      metrics: [
+        { label: "Operational Savings", value: "$4.2M Saved" },
+        { label: "ROI Speed Index", value: "2.4x Multiplier" },
+        { label: "ESG Score", value: "Tier 1 Compliant" }
+      ],
+      agents: ["Revenue Auditor", "ESG Scorekeeper", "SLA Guard AI"]
+    }
   ];
 
-  const connections = [
-    { from: "marine", to: "yard" },
-    { from: "yard", to: "crane" },
-    { from: "crane", to: "gate" },
-    { from: "gate", to: "customs" },
-    { from: "customs", to: "safety" },
-    { from: "safety", to: "marine" },
+  // Connection paths in the SVG viewport (0 0 960 700)
+  const paths = [
+    { d: "M 480 350 C 400 350, 320 110, 260 110", dur: "4.2s" }, // Card 1 (Top Left)
+    { d: "M 480 350 L 260 350", dur: "3.6s" }, // Card 2 (Middle Left)
+    { d: "M 480 350 C 400 350, 320 590, 260 590", dur: "4.8s" }, // Card 3 (Bottom Left)
+    { d: "M 480 350 C 560 350, 640 110, 700 110", dur: "4.0s" }, // Card 4 (Top Right)
+    { d: "M 480 350 L 700 350", dur: "3.8s" }, // Card 5 (Middle Right)
+    { d: "M 480 350 C 560 350, 640 590, 700 590", dur: "4.5s" }  // Card 6 (Bottom Right)
   ];
 
-  const activeNodeData = nodes.find((n) => n.id === activeNode) || nodes[0];
-  const ActiveIcon = activeNodeData.icon;
+  const activeNodeData = activeNode !== null ? cards[activeNode] : null;
 
   return (
     <section id="ecosystem" className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative">
@@ -1419,313 +1443,223 @@ function Ecosystem() {
         }}
       />
       {/* Ambient light glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-[radial-gradient(closest-side,rgba(56,189,248,0.1),transparent)] blur-3xl pointer-events-none" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full blur-3xl pointer-events-none transition-all duration-700" 
+        style={{
+          background: activeNodeData 
+            ? `radial-gradient(closest-side, ${activeNodeData.color}15, transparent)` 
+            : "radial-gradient(closest-side, rgba(56, 189, 248, 0.1), transparent)"
+        }}
+      />
 
       <div className="mx-auto max-w-6xl px-6">
-        <SectionHead eyebrow="The Ecosystem" title="The Autonomous Mesh" sub="Unified stakeholder consensus and real-time operational integration." />
+        <SectionHead 
+          eyebrow="The Ecosystem" 
+          title="One agentic mesh. Every stakeholder aligned." 
+          sub="PortMind AI connects marine, terminal, customs, safety, and logistical systems into a single self-arbitrating digital ecosystem." 
+        />
 
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left Column: Interactive Neural Mesh */}
-          <div className="lg:col-span-7 relative flex justify-center bg-card/10 rounded-2xl border border-white/5 p-4 backdrop-blur-md">
+        <div className="mt-16 relative min-h-[720px] lg:min-h-[700px] flex items-center justify-center">
+          {/* Layout Container */}
+          <div className="eco-layout-container w-full relative">
+            
+            {/* SVG Connections Layer (Visible on desktop) */}
             <svg
-              className="w-full max-w-[500px] aspect-square pointer-events-auto"
-              viewBox="0 0 600 500"
+              className="absolute inset-0 w-full h-full pointer-events-none hidden lg:block z-0"
+              viewBox="0 0 960 700"
               fill="none"
             >
               {/* Definitions for glowing filter shadows */}
               <defs>
-                <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                <filter id="glow-filter-eco" x="-20%" y="-20%" width="140%" height="140%">
                   <feGaussianBlur stdDeviation="8" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
               </defs>
 
-              {/* Edge connections between nodes */}
-              {connections.map((c, idx) => {
-                const start = nodes.find((n) => n.id === c.from)!;
-                const end = nodes.find((n) => n.id === c.to)!;
-                const isActiveConnection = activeNode === c.from || activeNode === c.to;
+              {paths.map((p, idx) => {
+                const card = cards[idx];
+                const isActive = activeNode === idx;
 
                 return (
                   <g key={idx}>
-                    <line
-                      x1={start.x}
-                      y1={start.y}
-                      x2={end.x}
-                      y2={end.y}
-                      stroke={isActiveConnection ? "#38bdf8" : "rgba(255, 255, 255, 0.07)"}
-                      strokeWidth={isActiveConnection ? 2.5 : 1}
+                    {/* Shadow Glow Line (when active) */}
+                    {isActive && (
+                      <path
+                        d={p.d}
+                        stroke={card.color}
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                        className="opacity-20"
+                        style={{ filter: "url(#glow-filter-eco)" }}
+                      />
+                    )}
+                    {/* Core Line */}
+                    <path
+                      d={p.d}
+                      stroke={isActive ? card.color : "rgba(255, 255, 255, 0.08)"}
+                      strokeWidth={isActive ? 2 : 1.5}
+                      strokeLinecap="round"
                       className="transition-all duration-300"
                     />
-                    {isActiveConnection && (
-                      <circle r="3" fill="#38bdf8">
-                        <animateMotion
-                          path={`M ${start.x} ${start.y} L ${end.x} ${end.y}`}
-                          dur="3s"
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                    )}
+                    {/* Animated Neon Flowing Dot */}
+                    <circle r={isActive ? 4.5 : 3} fill={isActive ? card.color : "rgba(56, 189, 248, 0.4)"} style={{ filter: isActive ? `drop-shadow(0 0 6px ${card.color})` : "none" }}>
+                      <animateMotion dur={isActive ? "2s" : p.dur} repeatCount="indefinite" path={p.d} />
+                    </circle>
                   </g>
                 );
               })}
 
-              {/* Central AI Sphere connection lines */}
-              {nodes.map((n, idx) => {
-                const isActiveConnection = activeNode === n.id;
-                return (
-                  <g key={`core-${idx}`}>
-                    <line
-                      x1="300"
-                      y1="250"
-                      x2={n.x}
-                      y2={n.y}
-                      stroke={isActiveConnection ? "#8B5CF6" : "rgba(255, 255, 255, 0.05)"}
-                      strokeWidth={isActiveConnection ? 2 : 1}
-                      strokeDasharray="4 4"
-                      className="transition-all duration-300"
-                    />
-                    {isActiveConnection && (
-                      <circle r="2" fill="#8B5CF6">
-                        <animateMotion
-                          path={`M 300 250 L ${n.x} ${n.y}`}
-                          dur="2s"
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                    )}
-                  </g>
-                );
-              })}
-
-              {/* Central Core sphere (PM-OS Core) */}
-              <g className="cursor-pointer" onClick={() => setActiveNode("marine")}>
-                <circle
-                  cx="300"
-                  cy="250"
-                  r="35"
-                  fill="url(#core-glow)"
-                  className="animate-pulse"
+              {/* Atomic Orbits loops around center (480, 350) */}
+              <g transform="rotate(-30 480 350)">
+                <path
+                  d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
+                  stroke={activeNodeData ? activeNodeData.color : "rgba(56, 189, 248, 0.15)"}
+                  strokeWidth="1"
+                  fill="none"
+                  className="transition-colors duration-500"
                 />
-                <circle
-                  cx="300"
-                  cy="250"
-                  r="22"
-                  fill="#0c1125"
-                  stroke="#8B5CF6"
-                  strokeWidth="2"
-                  style={{ filter: "drop-shadow(0 0 8px rgba(139, 92, 246, 0.5))" }}
-                />
-                <text
-                  x="300"
-                  y="254"
-                  fill="#fff"
-                  fontSize="9"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                  fontFamily="monospace"
-                >
-                  PM-OS
-                </text>
-                {/* Central Radial Gradient */}
-                <defs>
-                  <radialGradient id="core-glow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
-                  </radialGradient>
-                </defs>
+                <circle r="2.5" fill={activeNodeData ? activeNodeData.color : "#38bdf8"}>
+                  <animateMotion dur="6s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
+                </circle>
               </g>
 
-              {/* Node Circles */}
-              {nodes.map((n) => {
-                const isActive = activeNode === n.id;
-                const Icon = n.icon;
+              <g transform="rotate(30 480 350)">
+                <path
+                  d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
+                  stroke={activeNodeData ? activeNodeData.color : "rgba(139, 92, 246, 0.15)"}
+                  strokeWidth="1"
+                  fill="none"
+                  className="transition-colors duration-500"
+                />
+                <circle r="2.5" fill={activeNodeData ? activeNodeData.color : "#8b5cf6"}>
+                  <animateMotion dur="4s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
+                </circle>
+              </g>
+            </svg>
+
+            {/* Central AI Core Wrapper (Visible on desktop) */}
+            <div className="eco-core-wrapper hidden lg:grid">
+              <div 
+                className="eco-core-glow-bg transition-all duration-500" 
+                style={{
+                  background: activeNodeData 
+                    ? `radial-gradient(circle, ${activeNodeData.color}33 0%, ${activeNodeData.color}11 50%, transparent 70%)`
+                    : "radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(37, 99, 235, 0.12) 50%, transparent 70%)"
+                }}
+              />
+              <div 
+                className="eco-core-sphere transition-all duration-500 cursor-pointer group"
+                style={{
+                  borderColor: activeNodeData ? activeNodeData.color : "rgba(56, 189, 248, 0.4)",
+                  boxShadow: activeNodeData
+                    ? `inset 0 4px 15px rgba(255, 255, 255, 0.2), inset 0 -8px 25px rgba(0, 0, 0, 0.8), 0 0 35px ${activeNodeData.color}50`
+                    : "inset 0 4px 15px rgba(255, 255, 255, 0.25), inset 0 -8px 25px rgba(0, 0, 0, 0.8), 0 0 45px rgba(56, 189, 248, 0.4)"
+                }}
+              >
+                <div className="eco-core-inner-glow" />
+                <div className="z-10 text-center flex flex-col items-center select-none">
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-white/40 block">PM-OS</span>
+                  <span className="font-display text-sm font-black tracking-tight text-white transition-all duration-300">
+                    {activeNodeData ? activeNodeData.coreCode : "CORE"}
+                  </span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping mt-1 block" />
+                </div>
+              </div>
+            </div>
+
+            {/* Ecosystem Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:block gap-6">
+              {cards.map((c, idx) => {
+                const Icon = c.icon;
+                const isActive = activeNode === idx;
 
                 return (
-                  <g
-                    key={n.id}
-                    className="cursor-pointer group"
-                    onClick={() => setActiveNode(n.id)}
+                  <div 
+                    key={c.title} 
+                    className={`eco-glass-card card-${idx + 1} transition-all duration-300 group cursor-pointer`}
+                    style={{
+                      borderColor: isActive ? c.color : "rgba(255,255,255,0.08)",
+                      boxShadow: isActive 
+                        ? `0 12px 35px rgba(0, 0, 0, 0.5), 0 0 20px ${c.color}25, 0 1px 0 rgba(255, 255, 255, 0.08) inset`
+                        : "0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset",
+                      transform: isActive ? "translateY(-4px)" : "none"
+                    }}
+                    onMouseEnter={() => setActiveNode(idx)}
+                    onMouseLeave={() => setActiveNode(null)}
                   >
-                    {/* Glowing outer shadow ring */}
-                    {isActive && (
-                      <circle
-                        cx={n.x}
-                        cy={n.y}
-                        r="28"
-                        fill="none"
-                        stroke={n.color}
-                        strokeWidth="1.5"
-                        opacity="0.5"
-                        style={{ filter: "url(#glow-filter)" }}
-                      />
-                    )}
-
-                    {/* Base circle background */}
-                    <circle
-                      cx={n.x}
-                      cy={n.y}
-                      r="20"
-                      fill="#0c1125"
-                      stroke={isActive ? n.color : "rgba(255, 255, 255, 0.15)"}
-                      strokeWidth={isActive ? "2" : "1.5"}
-                      className="transition-all duration-300 group-hover:stroke-white"
-                    />
-
-                    {/* Embedding Lucide Icon inside SVG */}
-                    <foreignObject x={n.x - 10} y={n.y - 10} width="20" height="20">
-                      <div className="flex items-center justify-center h-full w-full pointer-events-none">
-                        <Icon className="h-4 w-4 transition-colors" style={{ color: isActive ? n.color : "rgba(255, 255, 255, 0.6)" }} />
+                    <div className="eco-card-header">
+                      <div className="eco-card-title-group">
+                        <span 
+                          className="eco-card-title-icon transition-colors"
+                          style={{
+                            color: isActive ? "#fff" : "rgba(255,255,255,0.7)",
+                            backgroundColor: isActive ? c.color : "rgba(255, 255, 255, 0.05)",
+                            borderColor: isActive ? c.color : "rgba(255, 255, 255, 0.1)"
+                          }}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <span className="eco-card-title block">{c.title}</span>
+                          <span className="text-[8px] text-white/30 uppercase tracking-widest font-mono block">
+                            Status: Online
+                          </span>
+                        </div>
                       </div>
-                    </foreignObject>
+                      <span className="eco-card-index">{c.index}</span>
+                    </div>
 
-                    {/* Text Label */}
-                    <text
-                      x={n.x}
-                      y={n.y + 35}
-                      textAnchor="middle"
-                      fill={isActive ? "#fff" : "rgba(255,255,255,0.4)"}
-                      fontSize="9.5"
-                      fontWeight={isActive ? "bold" : "normal"}
-                      className="transition-colors duration-300 select-none font-sans"
-                    >
-                      {n.name}
-                    </text>
-                  </g>
+                    <div className="eco-card-divider" />
+
+                    <div className="eco-card-body">
+                      {c.metrics.map((m) => (
+                        <div key={m.label} className="eco-card-metric">
+                          <span className="eco-metric-label">{m.label}</span>
+                          <span className="eco-metric-value">{m.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Dynamic AI Agent Runner sparkline overlay inside card on hover */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute inset-x-0 bottom-0 bg-[#080d21] rounded-b-2xl p-3 flex flex-col justify-end border-t border-white/5 z-30 pointer-events-none"
+                        >
+                          <span className="text-[8px] uppercase tracking-widest font-mono text-white/40 block mb-1">
+                            Orchestrated Agents
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {c.agents.slice(0, 2).map((agent, i) => (
+                              <span key={i} className="text-[8.5px] font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/80 whitespace-nowrap">
+                                {agent}
+                              </span>
+                            ))}
+                            {c.agents.length > 2 && (
+                              <span className="text-[8.5px] font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/40 font-semibold">
+                                +{c.agents.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 );
               })}
-            </svg>
-          </div>
+            </div>
 
-          {/* Right Column: Node Details Panel */}
-          <div className="lg:col-span-5">
-            <motion.div
-              key={activeNodeData.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative rounded-2xl border border-white/10 bg-[#0d142b]/80 p-6 backdrop-blur-md shadow-2xl overflow-hidden"
-            >
-              {/* Decorative top border color line matching the node color */}
-              <div
-                className="absolute top-0 inset-x-0 h-[3px] transition-all duration-300"
-                style={{ backgroundColor: activeNodeData.color }}
-              />
-
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span
-                    className="grid h-10 w-10 place-items-center rounded-lg"
-                    style={{ backgroundColor: `${activeNodeData.color}18`, color: activeNodeData.color }}
-                  >
-                    <ActiveIcon className="h-5.5 w-5.5" />
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-bold">{activeNodeData.name}</h3>
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-white/40 block mt-0.5">
-                      Operational Integration Layer
-                    </span>
-                  </div>
-                </div>
-
-                <span className="text-xs bg-white/5 border border-white/10 px-2 py-0.5 rounded font-mono text-white/60">
-                  LIVE
-                </span>
-              </div>
-
-              <p className="mt-4 text-xs md:text-sm text-white/70 leading-relaxed min-h-[50px]">
-                {activeNodeData.desc}
-              </p>
-
-              {/* Dynamic Live Metrics */}
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                  <div className="text-[9px] uppercase font-mono text-white/40">Primary Signal</div>
-                  <div className="mt-1 font-semibold text-xs text-white/90 font-mono">
-                    {activeNodeData.metrics.primary}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-                  <div className="text-[9px] uppercase font-mono text-white/40">Secondary Signal</div>
-                  <div className="mt-1 font-semibold text-xs text-white/90 font-mono">
-                    {activeNodeData.metrics.secondary}
-                  </div>
-                </div>
-              </div>
-
-              {/* Assigned AI Agents list */}
-              <div className="mt-6 space-y-2.5">
-                <div className="text-[10px] uppercase font-bold tracking-wider text-white/40 font-mono">
-                  Orchestrated AI Agents
-                </div>
-                <div className="grid gap-2 text-xs">
-                  {activeNodeData.agents.map((agent, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-2 rounded-lg bg-[#070b1a] px-3 py-2 border border-white/[0.03]"
-                    >
-                      <span
-                        className="h-1.5 w-1.5 rounded-full"
-                        style={{ backgroundColor: activeNodeData.color }}
-                      />
-                      <span className="text-white/80 font-mono">{agent}</span>
-                      <span className="ml-auto text-[8px] bg-white/5 px-1.5 py-0.5 rounded text-white/40 uppercase font-mono font-semibold">
-                        active
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Edge Load Sparkline visual */}
-              <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <span className="text-[9px] uppercase font-mono text-white/45 block">
-                    Dynamic AI Edge Load
-                  </span>
-                  <div className="flex items-end gap-0.5 h-6 mt-1.5">
-                    {Array.from({ length: 24 }).map((_, i) => {
-                      const h = Math.round(5 + Math.sin(i / 2) * 5 + Math.random() * 8);
-                      return (
-                        <span
-                          key={i}
-                          className="flex-1 rounded-sm bg-white/10"
-                          style={{
-                            height: `${h}px`,
-                            backgroundColor: i === 23 ? activeNodeData.color : "rgba(255,255,255,0.08)",
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] font-mono text-white/40">Throughput Index</span>
-                  <div className="font-mono font-bold text-sm text-cyan-300 mt-1">{livePulse}%</div>
-                </div>
-              </div>
-
-              {/* Redirect Action Button */}
-              <div className="mt-6">
-                <Link
-                  to="/app"
-                  className="w-full flex h-10 items-center justify-center gap-1.5 rounded-xl text-xs font-semibold text-white transition hover:brightness-110"
-                  style={{
-                    backgroundImage: `linear-gradient(135deg, ${activeNodeData.color} 0%, #0d162d 150%)`,
-                    boxShadow: `0 4px 15px -4px ${activeNodeData.color}50`,
-                  }}
-                >
-                  Launch Command Console
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 function AgentsOSSection() {
   const ingest = [

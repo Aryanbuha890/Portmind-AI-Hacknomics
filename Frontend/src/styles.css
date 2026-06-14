@@ -695,8 +695,9 @@
 @media (min-width: 1024px) {
   .eco-glass-card {
     position: absolute;
-    width: 240px;
-    height: 140px;
+    width: 260px;
+    height: auto;
+    min-height: 142px;
     z-index: 20;
   }
   .eco-glass-card.card-1 { top: 40px; left: 0; }
