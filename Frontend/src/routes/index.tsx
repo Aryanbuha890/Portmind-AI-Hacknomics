@@ -1423,14 +1423,15 @@ function Ecosystem() {
   // Connection paths in the SVG viewport (0 0 960 700)
   const paths = [
     { d: "M 480 350 C 400 350, 320 110, 260 110", dur: "4.2s" }, // Card 1 (Top Left)
-    { d: "M 480 350 L 260 350", dur: "3.6s" }, // Card 2 (Middle Left)
+    { d: "M 480 350 C 400 362, 320 338, 260 350", dur: "3.6s" }, // Card 2 (Middle Left)
     { d: "M 480 350 C 400 350, 320 590, 260 590", dur: "4.8s" }, // Card 3 (Bottom Left)
     { d: "M 480 350 C 560 350, 640 110, 700 110", dur: "4.0s" }, // Card 4 (Top Right)
-    { d: "M 480 350 L 700 350", dur: "3.8s" }, // Card 5 (Middle Right)
+    { d: "M 480 350 C 560 338, 640 362, 700 350", dur: "3.8s" }, // Card 5 (Middle Right)
     { d: "M 480 350 C 560 350, 640 590, 700 590", dur: "4.5s" }  // Card 6 (Bottom Right)
   ];
 
   const activeNodeData = activeNode !== null ? cards[activeNode] : null;
+  const themeColor = activeNodeData ? activeNodeData.color : "#38bdf8";
 
   return (
     <section 
@@ -1438,6 +1439,44 @@ function Ecosystem() {
       className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative"
       onClick={() => setActiveNode(null)}
     >
+      <style>{`
+        @keyframes marvel-rotate-cw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes marvel-rotate-ccw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        @keyframes marvel-pulse-ring {
+          0% { r: 50px; opacity: 0.8; stroke-width: 2px; }
+          100% { r: 125px; opacity: 0; stroke-width: 0.5px; }
+        }
+        @keyframes laser-flow {
+          from { stroke-dashoffset: 240; }
+          to { stroke-dashoffset: 0; }
+        }
+        .hud-rotate-cw {
+          transform-origin: 480px 350px;
+          animation: marvel-rotate-cw 15s linear infinite;
+        }
+        .hud-rotate-ccw {
+          transform-origin: 480px 350px;
+          animation: marvel-rotate-ccw 10s linear infinite;
+        }
+        .shockwave-ring {
+          transform-origin: 480px 350px;
+          animation: marvel-pulse-ring 3s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+        }
+        .laser-flow-path {
+          stroke-dasharray: 12 48;
+          animation: laser-flow 3s linear infinite;
+        }
+        .laser-flow-path-active {
+          stroke-dasharray: 24 36;
+          animation: laser-flow 1.5s linear infinite;
+        }
+      `}</style>
       {/* Subtle grid background */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -1479,6 +1518,13 @@ function Ecosystem() {
                   <feGaussianBlur stdDeviation="8" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
+                <filter id="marvel-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
               </defs>
 
               {paths.map((p, idx) => {
@@ -1506,6 +1552,16 @@ function Ecosystem() {
                       strokeLinecap="round"
                       className="transition-all duration-300"
                     />
+                    {/* Glowing laser pulse overlay */}
+                    <path
+                      d={p.d}
+                      stroke={isActive ? card.color : "rgba(56, 189, 248, 0.35)"}
+                      strokeWidth={isActive ? 2.5 : 1.5}
+                      strokeLinecap="round"
+                      fill="none"
+                      className={isActive ? "laser-flow-path-active" : "laser-flow-path"}
+                      style={{ filter: "url(#marvel-glow)" }}
+                    />
                     {/* Animated Neon Flowing Dot */}
                     <circle r={isActive ? 4.5 : 3} fill={isActive ? card.color : "rgba(56, 189, 248, 0.4)"} style={{ filter: isActive ? `drop-shadow(0 0 6px ${card.color})` : "none" }}>
                       <animateMotion dur={isActive ? "2s" : p.dur} repeatCount="indefinite" path={p.d} />
@@ -1514,29 +1570,57 @@ function Ecosystem() {
                 );
               })}
 
-              {/* Atomic Orbits loops around center (480, 350) */}
-              <g transform="rotate(-30 480 350)">
+              {/* Outer HUD circles wrapping the loop lines */}
+              <circle 
+                cx="480" 
+                cy="350" 
+                r="115" 
+                fill="none" 
+                stroke={themeColor} 
+                strokeWidth="1" 
+                strokeDasharray="60 30 15 30" 
+                className="hud-rotate-cw" 
+                opacity="0.25" 
+                style={{ animationDuration: "25s", filter: "url(#marvel-glow)" }} 
+              />
+              <circle 
+                cx="480" 
+                cy="350" 
+                r="115" 
+                fill="none" 
+                stroke={themeColor} 
+                strokeWidth="1" 
+                strokeDasharray="10 15" 
+                className="hud-rotate-ccw" 
+                opacity="0.15" 
+                style={{ animationDuration: "35s" }} 
+              />
+
+              {/* Two Rotating Loop Lines (Atomic Orbits) spinning in opposite directions */}
+              <g className="hud-rotate-cw" style={{ animationDuration: "20s" }}>
                 <path
                   d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
-                  stroke={activeNodeData ? activeNodeData.color : "rgba(56, 189, 248, 0.15)"}
-                  strokeWidth="1"
+                  stroke={themeColor}
+                  strokeWidth="1.2"
                   fill="none"
+                  opacity="0.3"
                   className="transition-colors duration-500"
                 />
-                <circle r="2.5" fill={activeNodeData ? activeNodeData.color : "#38bdf8"}>
+                <circle r="3.5" fill={themeColor} style={{ filter: "url(#marvel-glow)" }}>
                   <animateMotion dur="6s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
                 </circle>
               </g>
 
-              <g transform="rotate(30 480 350)">
+              <g className="hud-rotate-ccw" style={{ animationDuration: "16s" }}>
                 <path
                   d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
-                  stroke={activeNodeData ? activeNodeData.color : "rgba(139, 92, 246, 0.15)"}
-                  strokeWidth="1"
+                  stroke={themeColor}
+                  strokeWidth="1.2"
                   fill="none"
+                  opacity="0.3"
                   className="transition-colors duration-500"
                 />
-                <circle r="2.5" fill={activeNodeData ? activeNodeData.color : "#8b5cf6"}>
+                <circle r="3.5" fill={themeColor} style={{ filter: "url(#marvel-glow)" }}>
                   <animateMotion dur="4s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
                 </circle>
               </g>

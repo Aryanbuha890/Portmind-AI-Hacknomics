@@ -163,6 +163,33 @@
     border-color: var(--color-border);
   }
 
+  /* Custom styled scrollbar matching the dark theme */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #05060f;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.25);
+    border-radius: 9999px;
+    border: 2.5px solid #05060f;
+    transition: background-color 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.5);
+  }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.25) #05060f;
+    scroll-behavior: smooth;
+  }
+
   html,
   body {
     background-color: var(--color-background);
@@ -170,7 +197,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
   }
 
   h1,
