@@ -1433,7 +1433,11 @@ function Ecosystem() {
   const activeNodeData = activeNode !== null ? cards[activeNode] : null;
 
   return (
-    <section id="ecosystem" className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative">
+    <section 
+      id="ecosystem" 
+      className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative"
+      onClick={() => setActiveNode(null)}
+    >
       {/* Subtle grid background */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -1539,7 +1543,7 @@ function Ecosystem() {
             </svg>
 
             {/* Central AI Core Wrapper (Visible on desktop) */}
-            <div className="eco-core-wrapper hidden lg:grid">
+            <div className="eco-core-wrapper hidden lg:grid" onClick={(e) => e.stopPropagation()}>
               <div 
                 className="eco-core-glow-bg transition-all duration-500" 
                 style={{
@@ -1585,8 +1589,10 @@ function Ecosystem() {
                         : "0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset",
                       transform: isActive ? "translateY(-4px)" : "none"
                     }}
-                    onMouseEnter={() => setActiveNode(idx)}
-                    onMouseLeave={() => setActiveNode(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveNode(isActive ? null : idx);
+                    }}
                   >
                     <div className="eco-card-header">
                       <div className="eco-card-title-group">
@@ -1612,42 +1618,52 @@ function Ecosystem() {
 
                     <div className="eco-card-divider" />
 
-                    <div className="eco-card-body">
-                      {c.metrics.map((m) => (
-                        <div key={m.label} className="eco-card-metric">
-                          <span className="eco-metric-label">{m.label}</span>
-                          <span className="eco-metric-value">{m.value}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Dynamic AI Agent Runner sparkline overlay inside card on hover */}
-                    <AnimatePresence>
-                      {isActive && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="absolute inset-x-0 bottom-0 bg-[#080d21] rounded-b-2xl p-3 flex flex-col justify-end border-t border-white/5 z-30 pointer-events-none"
-                        >
-                          <span className="text-[8px] uppercase tracking-widest font-mono text-white/40 block mb-1">
-                            Orchestrated Agents
-                          </span>
-                          <div className="flex flex-wrap gap-1">
-                            {c.agents.slice(0, 2).map((agent, i) => (
-                              <span key={i} className="text-[8.5px] font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/80 whitespace-nowrap">
-                                {agent}
-                              </span>
+                    <div className="relative min-h-[72px] flex flex-col justify-center">
+                      <AnimatePresence mode="wait">
+                        {!isActive ? (
+                          <motion.div
+                            key="metrics"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="eco-card-body"
+                          >
+                            {c.metrics.map((m) => (
+                              <div key={m.label} className="eco-card-metric">
+                                <span className="eco-metric-label">{m.label}</span>
+                                <span className="eco-metric-value">{m.value}</span>
+                              </div>
                             ))}
-                            {c.agents.length > 2 && (
-                              <span className="text-[8.5px] font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/40 font-semibold">
-                                +{c.agents.length - 2}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="details"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="flex flex-col gap-2 text-left"
+                          >
+                            <p className="text-[11px] leading-normal text-white/70">
+                              {c.description}
+                            </p>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[8px] uppercase tracking-widest font-mono text-white/40 block">
+                                Orchestrated Agents
                               </span>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                              <div className="flex flex-wrap gap-1">
+                                {c.agents.map((agent, i) => (
+                                  <span key={i} className="text-[8.5px] font-mono bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/80 whitespace-nowrap">
+                                    {agent}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 );
               })}
