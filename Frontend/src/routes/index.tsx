@@ -118,7 +118,7 @@ function Nav() {
           backgroundImage:
             "linear-gradient(135deg, rgba(15,23,42,0.72) 0%, rgba(30,27,75,0.62) 45%, rgba(15,23,42,0.72) 100%)",
         }}
-        className="relative mx-auto flex items-center gap-6 rounded-full border border-white/15 backdrop-blur-2xl shadow-[0_20px_60px_-20px_rgba(2,6,23,0.65),inset_0_1px_0_0_rgba(255,255,255,0.18),inset_0_-1px_0_0_rgba(255,255,255,0.04)]"
+        className="relative mx-auto flex items-center gap-3 sm:gap-6 rounded-full border border-white/15 backdrop-blur-2xl shadow-[0_20px_60px_-20px_rgba(2,6,23,0.65),inset_0_1px_0_0_rgba(255,255,255,0.18),inset_0_-1px_0_0_rgba(255,255,255,0.04)]"
       >
         {/* Top gloss reflection sheen */}
         <span
@@ -179,13 +179,13 @@ function Nav() {
         <div className="relative ml-auto flex items-center gap-1.5">
           <Link
             to="/auth/login"
-            className="hidden sm:inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium text-white/75 hover:text-white hover:bg-white/10"
+            className="hidden md:inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium text-white/75 hover:text-white hover:bg-white/10"
           >
             Sign in
           </Link>
           <Link
             to="/app"
-            className="group relative inline-flex h-9 items-center gap-1.5 overflow-hidden rounded-full px-4 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7),inset_0_1px_0_0_rgba(255,255,255,0.35)] transition-transform hover:-translate-y-px"
+            className="group relative hidden md:inline-flex h-9 items-center gap-1.5 overflow-hidden rounded-full px-4 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7),inset_0_1px_0_0_rgba(255,255,255,0.35)] transition-transform hover:-translate-y-px"
             style={{
               backgroundImage: "linear-gradient(120deg, #1b3a6b 0%, #2563eb 50%, #0d9488 110%)",
             }}
@@ -301,81 +301,6 @@ function Hero() {
 
       <div className="relative w-full max-w-6xl px-6 flex flex-col justify-center items-center flex-1">
         <motion.div style={{ y }} className="mx-auto max-w-5xl text-center w-full flex flex-col items-center justify-center">
-          {/* Tagline Badge - 3D Rotating Wordmark */}
-          <div style={{ perspective: "1500px" }} className="mb-8 flex justify-center select-none">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 20 }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                rotateY: [0, 360],
-                rotateX: [10, -10, 10],
-              }}
-              transition={{
-                opacity: { duration: 0.8 },
-                scale: { duration: 0.8 },
-                y: { duration: 0.8 },
-                rotateY: { duration: 18, ease: "linear", repeat: Infinity },
-                rotateX: { duration: 9, ease: "easeInOut", repeat: Infinity },
-              }}
-              style={{
-                transformStyle: "preserve-3d",
-              }}
-              className="relative flex items-center justify-center px-12 py-6 cursor-grab active:cursor-grabbing"
-            >
-              {/* Layered 3D Text Extrusion */}
-              <span
-                className="relative inline-block font-sans font-black tracking-[0.2em] text-xl sm:text-2xl md:text-4xl lg:text-5xl uppercase text-center"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                {Array.from({ length: 30 }).map((_, i) => {
-                  const zValue = i * 0.85;
-                  const pct = i / 30;
-
-                  let color = "#020617"; // deep shadow backplate
-                  if (pct > 0.95) {
-                    color = "#06b6d4"; // cyan-400 near front
-                  } else if (pct > 0.8) {
-                    color = "#2563eb"; // blue-500
-                  } else if (pct > 0.6) {
-                    color = "#1d4ed8"; // blue-750
-                  } else if (pct > 0.4) {
-                    color = "#1e3a8a"; // blue-900
-                  } else if (pct > 0.2) {
-                    color = "#0f172a"; // dark slate
-                  } else if (pct > 0.08) {
-                    color = "#020617"; // background black
-                  }
-
-                  return (
-                    <span
-                      key={i}
-                      className="absolute inset-0 flex items-center justify-center whitespace-nowrap pointer-events-none"
-                      style={{
-                        transform: `translate3d(0, 0, ${zValue}px)`,
-                        color: color,
-                        filter: i === 0 ? "blur(4px) opacity(0.7)" : "none",
-                        WebkitTextStroke: i < 28 ? "1.5px rgba(0,0,0,0.3)" : "none",
-                      }}
-                    >
-                      PORTMIND AI
-                    </span>
-                  );
-                })}
-
-                {/* Frontmost Layer (Glossy holographic styling) */}
-                <span
-                  className="relative flex items-center justify-center whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-indigo-100 to-blue-300 filter drop-shadow-[0_4px_10px_rgba(56,189,248,0.6)]"
-                  style={{
-                    transform: "translate3d(0, 0, 25.5px)",
-                  }}
-                >
-                  PORTMIND AI
-                </span>
-              </span>
-            </motion.div>
-          </div>
 
           {/* Heading */}
           <motion.h1
@@ -1434,11 +1359,7 @@ function Ecosystem() {
   const themeColor = activeNodeData ? activeNodeData.color : "#38bdf8";
 
   return (
-    <section 
-      id="ecosystem" 
-      className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative"
-      onClick={() => setActiveNode(null)}
-    >
+    <section id="ecosystem" className="border-t border-white/5 py-28 overflow-hidden bg-[#05060F] relative">
       <style>{`
         @keyframes marvel-rotate-cw {
           from { transform: rotate(0deg); }
@@ -1462,6 +1383,14 @@ function Ecosystem() {
         }
         .hud-rotate-ccw {
           transform-origin: 480px 350px;
+          animation: marvel-rotate-ccw 10s linear infinite;
+        }
+        .hud-core-rotate-cw {
+          transform-origin: 110px 110px;
+          animation: marvel-rotate-cw 15s linear infinite;
+        }
+        .hud-core-rotate-ccw {
+          transform-origin: 110px 110px;
           animation: marvel-rotate-ccw 10s linear infinite;
         }
         .shockwave-ring {
@@ -1569,65 +1498,81 @@ function Ecosystem() {
                   </g>
                 );
               })}
-
-              {/* Outer HUD circles wrapping the loop lines */}
-              <circle 
-                cx="480" 
-                cy="350" 
-                r="115" 
-                fill="none" 
-                stroke={themeColor} 
-                strokeWidth="1" 
-                strokeDasharray="60 30 15 30" 
-                className="hud-rotate-cw" 
-                opacity="0.25" 
-                style={{ animationDuration: "25s", filter: "url(#marvel-glow)" }} 
-              />
-              <circle 
-                cx="480" 
-                cy="350" 
-                r="115" 
-                fill="none" 
-                stroke={themeColor} 
-                strokeWidth="1" 
-                strokeDasharray="10 15" 
-                className="hud-rotate-ccw" 
-                opacity="0.15" 
-                style={{ animationDuration: "35s" }} 
-              />
-
-              {/* Two Rotating Loop Lines (Atomic Orbits) spinning in opposite directions */}
-              <g className="hud-rotate-cw" style={{ animationDuration: "20s" }}>
-                <path
-                  d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
-                  stroke={themeColor}
-                  strokeWidth="1.2"
-                  fill="none"
-                  opacity="0.3"
-                  className="transition-colors duration-500"
-                />
-                <circle r="3.5" fill={themeColor} style={{ filter: "url(#marvel-glow)" }}>
-                  <animateMotion dur="6s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
-                </circle>
-              </g>
-
-              <g className="hud-rotate-ccw" style={{ animationDuration: "16s" }}>
-                <path
-                  d="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350"
-                  stroke={themeColor}
-                  strokeWidth="1.2"
-                  fill="none"
-                  opacity="0.3"
-                  className="transition-colors duration-500"
-                />
-                <circle r="3.5" fill={themeColor} style={{ filter: "url(#marvel-glow)" }}>
-                  <animateMotion dur="4s" repeatCount="indefinite" path="M 380 350 A 100 40 0 1 0 580 350 A 100 40 0 1 0 380 350" />
-                </circle>
-              </g>
             </svg>
 
-            {/* Central AI Core Wrapper (Visible on desktop) */}
-            <div className="eco-core-wrapper hidden lg:grid" onClick={(e) => e.stopPropagation()}>
+            {/* Central AI Core Wrapper */}
+            <div className="eco-core-wrapper">
+              {/* Rotating HUD loops around the core */}
+              <svg
+                className="absolute w-[220px] h-[220px] pointer-events-none z-0"
+                viewBox="0 0 220 220"
+                fill="none"
+              >
+                <defs>
+                  <filter id="marvel-glow-core" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                {/* Outer HUD circles wrapping the loop lines */}
+                <circle 
+                  cx="110" 
+                  cy="110" 
+                  r="82" 
+                  fill="none" 
+                  stroke={themeColor} 
+                  strokeWidth="1" 
+                  strokeDasharray="45 25 15 25" 
+                  className="hud-core-rotate-cw" 
+                  opacity="0.3" 
+                  style={{ filter: "url(#marvel-glow-core)" }} 
+                />
+                <circle 
+                  cx="110" 
+                  cy="110" 
+                  r="82" 
+                  fill="none" 
+                  stroke={themeColor} 
+                  strokeWidth="1" 
+                  strokeDasharray="6 12" 
+                  className="hud-core-rotate-ccw" 
+                  opacity="0.2" 
+                />
+
+                {/* Two Rotating Loop Lines (Atomic Orbits) spinning in opposite directions */}
+                <g className="hud-core-rotate-cw">
+                  <path
+                    d="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110"
+                    stroke={themeColor}
+                    strokeWidth="1.2"
+                    fill="none"
+                    opacity="0.35"
+                    className="transition-colors duration-500"
+                  />
+                  <circle r="3" fill={themeColor} style={{ filter: "url(#marvel-glow-core)" }}>
+                    <animateMotion dur="6s" repeatCount="indefinite" path="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110" />
+                  </circle>
+                </g>
+
+                <g className="hud-core-rotate-ccw">
+                  <path
+                    d="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110"
+                    stroke={themeColor}
+                    strokeWidth="1.2"
+                    fill="none"
+                    opacity="0.35"
+                    className="transition-colors duration-500"
+                  />
+                  <circle r="3" fill={themeColor} style={{ filter: "url(#marvel-glow-core)" }}>
+                    <animateMotion dur="4s" repeatCount="indefinite" path="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110" />
+                  </circle>
+                </g>
+              </svg>
+
               <div 
                 className="eco-core-glow-bg transition-all duration-500" 
                 style={{
@@ -1673,10 +1618,8 @@ function Ecosystem() {
                         : "0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset",
                       transform: isActive ? "translateY(-4px)" : "none"
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveNode(isActive ? null : idx);
-                    }}
+                    onMouseEnter={() => setActiveNode(idx)}
+                    onMouseLeave={() => setActiveNode(null)}
                   >
                     <div className="eco-card-header">
                       <div className="eco-card-title-group">
@@ -3733,26 +3676,26 @@ function Footer() {
       </div>
 
       {/* Bottom Legal / Copyright strip */}
-      <div className="mx-auto max-w-[1380px] px-6 md:px-10 mt-16 pt-8 border-t border-dashed border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs text-white/40 relative z-10">
-        <div className="flex items-center gap-6">
-          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-          <a href="#" className="hover:text-white transition-colors">Security Details</a>
-          <a href="#" className="hover:text-white transition-colors">Manage Cookies</a>
+      <div className="mx-auto max-w-[1380px] px-6 md:px-10 mt-16 pt-8 border-t border-dashed border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-white/40 relative z-10">
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5">
+          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</a>
+          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</a>
+          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Security Details</a>
+          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</a>
         </div>
-        <div>
+        <div className="whitespace-nowrap">
           © {year} PortMind AI B.V. All rights reserved.
         </div>
       </div>
 
       {/* Giant Watermark Layer */}
-      <div className="relative w-full pointer-events-none select-none z-0 overflow-hidden h-[18vw] min-h-[140px] flex items-end justify-center mt-2">
+      <div className="relative w-full pointer-events-none select-none z-0 h-[18vw] min-h-[140px] flex items-end justify-center mt-2 pb-6 md:pb-10">
         {/* Vibrant cyan-blue background gradient */}
         <div className="absolute inset-x-0 bottom-0 h-[120%] bg-gradient-to-t from-[#2563EB]/25 via-[#1E3A8A]/5 to-transparent pointer-events-none" />
         {/* Radial spotlight centered at the bottom to give that intense bright glow */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[160px] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.45)_0%,rgba(37,99,235,0.18)_40%,transparent_70%)] blur-2xl pointer-events-none" />
 
-        <h1 className="relative z-10 text-[9.2vw] font-black leading-[0.8] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white/25 via-white/5 to-transparent select-none uppercase font-sans whitespace-nowrap">
+        <h1 className="relative z-10 text-[9.2vw] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white/25 via-white/5 to-transparent select-none uppercase font-sans whitespace-nowrap">
           PortMind AI
         </h1>
       </div>

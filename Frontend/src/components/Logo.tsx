@@ -25,7 +25,7 @@ export function Logo({
           <circle cx="12" cy="14" r="2.2" fill="currentColor" stroke="none" />
         </svg>
       </span>
-      <span className="font-display text-[17px] font-semibold tracking-tight text-white">
+      <span className="font-display text-[17px] font-semibold tracking-tight text-white whitespace-nowrap">
         PortMind{" "}
         <span className="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">
           AI
