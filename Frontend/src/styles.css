@@ -452,9 +452,6 @@
 
 @utility animate-logo-scroll {
   animation: logo-scroll 28s linear infinite;
-  &:hover {
-    animation-play-state: paused;
-  }
 }
 
 /* Premium White macOS-style Window Cards for How It Works */

@@ -81,6 +81,7 @@ function Landing() {
       <Ecosystem />
       <AgentsOSSection />
       <Features />
+      <FAQ />
       <Footer />
     </div>
   );
@@ -1162,7 +1163,7 @@ function DashboardSection() {
           itemScale={0.03}
           itemStackDistance={35}
           rotationAmount={0}
-          blurAmount={1.5}
+          blurAmount={0}
           stackPosition="12%"
         >
           <ScrollStackItem>
@@ -1218,7 +1219,7 @@ function Trust() {
           background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95) 15%, rgba(255, 255, 255, 0.95) 85%, transparent)"
         }}
       >
-        <div className="flex w-max gap-16 animate-logo-scroll cursor-pointer">
+        <div className="flex w-max gap-16 animate-logo-scroll cursor-default">
           {scrollLogos.map((logo, idx) => (
             <div key={idx} className="flex items-center justify-center min-w-[200px] h-18">
               <img
@@ -1306,9 +1307,9 @@ function JourneySection() {
       <div className="mx-auto max-w-6xl px-6 relative z-10">
         {/* Section heading with Navigation Arrows */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#38bdf8]">System Phases</span>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl sm:whitespace-nowrap">
               Start your journey with PortMind AI
             </h2>
           </div>
@@ -1341,9 +1342,9 @@ function JourneySection() {
               key={card.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.15 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.6, delay: idx * 0.08, type: "spring", stiffness: 80, damping: 15 }}
-              className="flex-shrink-0 w-[285px] sm:w-[320px] md:w-[340px] snap-start rounded-[24px] border border-white/10 bg-[#0c0d16] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:border-[#38bdf8]/30 cursor-default flex flex-col h-[450px] shadow-2xl"
+              className="flex-shrink-0 w-[285px] sm:w-[320px] md:w-[340px] snap-start rounded-[24px] border border-white/10 bg-[#0c0d16] overflow-hidden transition-shadow transition-colors duration-300 hover:shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:border-[#38bdf8]/30 cursor-default flex flex-col h-[450px] shadow-2xl"
             >
               {/* Card text content */}
               <div className="px-6 pt-6 pb-2">
@@ -1671,21 +1672,6 @@ function Ecosystem() {
               viewBox="0 0 960 700"
               fill="none"
             >
-              {/* Definitions for glowing filter shadows */}
-              <defs>
-                <filter id="glow-filter-eco" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="8" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-                <filter id="marvel-glow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-
               {paths.map((p, idx) => {
                 const card = cards[idx];
                 const isActive = activeNode === idx;
@@ -1700,7 +1686,7 @@ function Ecosystem() {
                         strokeWidth="5"
                         strokeLinecap="round"
                         className="opacity-20"
-                        style={{ filter: "url(#glow-filter-eco)" }}
+                        style={{ filter: `drop-shadow(0 0 8px ${card.color})` }}
                       />
                     )}
                     {/* Core Line */}
@@ -1719,7 +1705,7 @@ function Ecosystem() {
                       strokeLinecap="round"
                       fill="none"
                       className={isActive ? "laser-flow-path-active" : "laser-flow-path"}
-                      style={{ filter: "url(#marvel-glow)" }}
+                      style={{ filter: `drop-shadow(0 0 3px ${isActive ? card.color : "rgba(56, 189, 248, 0.2)"})` }}
                     />
                     {/* Animated Neon Flowing Dot */}
                     <circle r={isActive ? 4.5 : 3} fill={isActive ? card.color : "rgba(56, 189, 248, 0.4)"} style={{ filter: isActive ? `drop-shadow(0 0 6px ${card.color})` : "none" }}>
@@ -1738,16 +1724,6 @@ function Ecosystem() {
                 viewBox="0 0 220 220"
                 fill="none"
               >
-                <defs>
-                  <filter id="marvel-glow-core" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                    <feMerge>
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-                </defs>
-
                 {/* Outer HUD circles wrapping the loop lines */}
                 <circle 
                   cx="110" 
@@ -1759,7 +1735,7 @@ function Ecosystem() {
                   strokeDasharray="45 25 15 25" 
                   className="hud-core-rotate-cw" 
                   opacity="0.3" 
-                  style={{ filter: "url(#marvel-glow-core)" }} 
+                  style={{ filter: `drop-shadow(0 0 2px ${themeColor})` }} 
                 />
                 <circle 
                   cx="110" 
@@ -1783,7 +1759,7 @@ function Ecosystem() {
                     opacity="0.35"
                     className="transition-colors duration-500"
                   />
-                  <circle r="3" fill={themeColor} style={{ filter: "url(#marvel-glow-core)" }}>
+                  <circle r="3" fill={themeColor} style={{ filter: `drop-shadow(0 0 2px ${themeColor})` }}>
                     <animateMotion dur="6s" repeatCount="indefinite" path="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110" />
                   </circle>
                 </g>
@@ -1797,7 +1773,7 @@ function Ecosystem() {
                     opacity="0.35"
                     className="transition-colors duration-500"
                   />
-                  <circle r="3" fill={themeColor} style={{ filter: "url(#marvel-glow-core)" }}>
+                  <circle r="3" fill={themeColor} style={{ filter: `drop-shadow(0 0 2px ${themeColor})` }}>
                     <animateMotion dur="4s" repeatCount="indefinite" path="M 35 110 A 75 28 0 1 0 185 110 A 75 28 0 1 0 35 110" />
                   </circle>
                 </g>
@@ -3700,6 +3676,98 @@ function Features() {
   );
 }
 
+export function FAQ() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const faqData = [
+    {
+      question: "What is PortMind AI?",
+      answer: "PortMind AI is a unified port operating system designed to scale port capacity, eliminate terminal bottlenecks, and protect site personnel. We integrate real-time computer vision, agentic AI scheduling runtimes, and predictive maintenance tools into a single digital twin command center."
+    },
+    {
+      question: "How does the YOLOv11 Computer Vision work?",
+      answer: "Our neural perception models ingest live security and operational cameras across the port terminal to automatically read container ISO codes, detect container damage, identify truck gate license plates, and flag PPE safety compliance violations in real-time."
+    },
+    {
+      question: "What is the LangGraph Multi-Agent system?",
+      answer: "We deploy LangGraph agent runtimes that operate in a closed-loop. These autonomous agents coordinate with each other to allocate yard stack blocks, clear customs manifests, auto-dispatch safety crews, and route container trucks to optimized crane slots."
+    },
+    {
+      question: "How does predictive maintenance schedule repairs?",
+      answer: "By monitoring crane structural stress and engine telemetry, our ML classifiers calculate the Remaining Useful Life (RUL) of quay and yard machinery, forecasting potential breakdown schedules weeks in advance so maintenance can be scheduled without interrupting terminal throughput."
+    },
+    {
+      question: "Is PortMind AI compatible with existing terminal operating systems (TOS)?",
+      answer: "Yes. PortMind AI is built as a modular integration layer. We connect directly with standard terminal databases, AIS radio streams, GPS telemetry, and existing TOS providers like Navis N4, Sparcs, or custom legacy systems."
+    }
+  ];
+
+  return (
+    <section id="faq" className="py-24 relative overflow-hidden bg-[#05060F] border-t border-white/5">
+      {/* Glow details */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
+
+      <div className="mx-auto max-w-4xl px-6 relative z-10 text-center">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-sky-500/20 bg-sky-500/5 text-xs font-semibold uppercase tracking-[0.2em] text-[#38bdf8]">
+          FAQ
+        </div>
+        
+        <h2 className="mt-4 font-display text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+          Frequently asked questions
+        </h2>
+        
+        <p className="mt-4 text-neutral-400 text-sm sm:text-base">
+          Haven't found what you're looking for?{" "}
+          <a
+            href="mailto:support@portmind.ai"
+            className="text-[#38bdf8] hover:text-sky-300 transition-colors font-medium underline underline-offset-4 decoration-sky-500/30"
+          >
+            Contact us.
+          </a>
+        </p>
+
+        <div className="mt-16 max-w-3xl mx-auto flex flex-col border-t border-white/5 text-left">
+          {faqData.map((item, idx) => {
+            const isOpen = openIdx === idx;
+            return (
+              <div key={idx} className="border-b border-white/5 py-6 sm:py-7">
+                <button
+                  onClick={() => setOpenIdx(isOpen ? null : idx)}
+                  className="w-full flex items-center justify-between text-left gap-4 group cursor-pointer bg-transparent border-none p-0"
+                >
+                  <span className="text-base sm:text-xl font-semibold text-white/90 group-hover:text-white transition-colors duration-200 tracking-tight">
+                    {item.question}
+                  </span>
+                  <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
+                    {/* Horizontal line */}
+                    <div className="absolute w-4.5 h-[1.5px] bg-neutral-600 group-hover:bg-neutral-400 transition-colors duration-200" />
+                    {/* Vertical line */}
+                    <motion.div
+                      className="absolute w-[1.5px] h-4.5 bg-neutral-600 group-hover:bg-neutral-400 transition-colors duration-200"
+                      animate={{ rotate: isOpen ? 90 : 0, opacity: isOpen ? 0 : 1, scaleY: isOpen ? 0 : 1 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                    />
+                  </div>
+                </button>
+                <motion.div
+                  initial={false}
+                  animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-4 text-sm sm:text-base text-neutral-400 leading-relaxed max-w-[90%] font-normal">
+                    {item.answer}
+                  </div>
+                </motion.div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Footer() {
   const year = new Date().getFullYear();
 
@@ -3891,7 +3959,7 @@ function Footer() {
                 <li key={idx}>
                   <Link
                     to={link.to}
-                    hash={link.hash}
+                    {...(link.hash ? { hash: link.hash } : {})}
                     className="text-white/75 hover:text-white hover:underline transition decoration-white/20 underline-offset-4"
                   >
                     {link.label}
@@ -3908,10 +3976,10 @@ function Footer() {
       {/* Bottom Legal / Copyright strip */}
       <div className="mx-auto max-w-[1380px] px-6 md:px-10 mt-16 pt-8 border-t border-dashed border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-white/40 relative z-10">
         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5">
-          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</a>
-          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</a>
-          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Security Details</a>
-          <a href="#" className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</a>
+          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</a>
+          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</a>
+          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Security Details</a>
+          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</a>
         </div>
         <div className="whitespace-nowrap">
           © {year} PortMind AI B.V. All rights reserved.
