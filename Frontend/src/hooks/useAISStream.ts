@@ -4,9 +4,9 @@ import { Vessel } from "@/components/MapComponent";
 const AISSTREAM_API_KEY = import.meta.env.VITE_AISSTREAM_API_KEY || "";
 const AISSTREAM_URL = import.meta.env.VITE_AISSTREAM_URL || "wss://stream.aisstream.io/v0/stream";
 
-// Bounding box around Mundra Port & surrounding Arabian Sea
+// Global bounding box covering the entire world for global live feed
 // Format: [[[minLat, minLon], [maxLat, maxLon]]]
-const MUNDRA_BOUNDING_BOX = [[[19.5, 67.0], [24.5, 72.5]]];
+const MUNDRA_BOUNDING_BOX = [[[-90.0, -180.0], [90.0, 180.0]]];
 
 // Map AIS Type numeric codes to category strings
 const mapAisTypeToCategory = (typeId: number): string => {
@@ -290,7 +290,17 @@ export function useAISStream() {
           const type = data.MessageType;
 
           setVessels(prev => {
-            const existing = prev[mmsiStr] || {
+            const next = { ...prev };
+            
+            // Prune oldest keys if they exceed 400 items to avoid DOM lag in global stream
+            const keys = Object.keys(next);
+            if (keys.length > 400) {
+              for (let i = 0; i < 150; i++) {
+                delete next[keys[i]];
+              }
+            }
+
+            const existing = next[mmsiStr] || {
               id: mmsiStr,
               name: meta.ShipName || `MMSI ${mmsiStr}`,
               type: "Cargo",
@@ -347,10 +357,8 @@ export function useAISStream() {
               updated.risk = "Low";
             }
 
-            return {
-              ...prev,
-              [mmsiStr]: updated
-            };
+            next[mmsiStr] = updated;
+            return next;
           });
         } catch (err) {
           console.error("Error parsing AISStream payload:", err);

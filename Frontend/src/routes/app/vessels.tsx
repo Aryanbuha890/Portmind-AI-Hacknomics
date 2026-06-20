@@ -164,10 +164,10 @@ function VesselsPage() {
           <div className={`relative w-full overflow-hidden rounded-lg border border-border transition-all duration-300 ${isMaximized ? "h-[650px]" : "h-[500px]"}`}>
             <ClientOnly fallback={<MapPlaceholder />}>
               <MapComponent
-                center={[22.3, 69.6]} // Center slightly out to display the broad zone
-                zoom={isMaximized ? 9 : 10}
+                center={isLive ? [20.0, 0.0] : [22.72, 69.71]}
+                zoom={isLive ? 2 : (isMaximized ? 9 : 10)}
                 vessels={liveVessels}
-                risks={mockRisks}
+                risks={isLive ? [] : mockRisks}
                 selectedVesselId={selectedId}
                 onSelectVessel={setSelectedId}
                 showFiltersInline={true}
