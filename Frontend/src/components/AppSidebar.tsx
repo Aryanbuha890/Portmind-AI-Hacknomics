@@ -7,18 +7,12 @@ import {
   ShieldAlert,
   Sparkles,
   BarChart3,
-  Settings,
   LogOut,
   Search,
   Bell,
-  Brain,
-  Map,
-  Network,
   FlaskConical,
   TrendingUp,
-  Briefcase,
   FileSearch,
-  AlertOctagon,
 } from "lucide-react";
 import { Logo } from "./Logo";
 
@@ -33,20 +27,14 @@ const opsItems: NavItem[] = [
 ];
 
 const aiItems: NavItem[] = [
-  { to: "/app/decision-center", label: "Decision Center", icon: Brain },
-  { to: "/app/digital-twin", label: "Digital Twin", icon: Map },
-  { to: "/app/war-room", label: "War Room", icon: Network },
   { to: "/app/simulator", label: "Simulator", icon: FlaskConical },
   { to: "/app/predictions", label: "Predictions", icon: TrendingUp },
-  { to: "/app/executive", label: "Executive", icon: Briefcase },
   { to: "/app/docs-ai", label: "Docs AI", icon: FileSearch },
-  { to: "/app/emergency", label: "Emergency", icon: AlertOctagon },
 ];
 
 const bottomItems: NavItem[] = [
   { to: "/app/copilot", label: "AI Copilot", icon: Sparkles },
   { to: "/app/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
 export function AppSidebar() {

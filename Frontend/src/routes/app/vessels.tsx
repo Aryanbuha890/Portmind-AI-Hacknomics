@@ -3,338 +3,358 @@ import { AppTopBar } from "@/components/AppSidebar";
 import { Panel } from "./index";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Ship, Search, MapPin, Anchor, Navigation2 } from "lucide-react";
+import { Ship, Search, MapPin, Anchor, Radio, Maximize2, Minimize2 } from "lucide-react";
+import { ClientOnly } from "@/components/ClientOnly";
+import MapComponent, { RiskZone, Vessel } from "@/components/MapComponent";
+import { useAISStream } from "@/hooks/useAISStream";
 
 export const Route = createFileRoute("/app/vessels")({
   component: VesselsPage,
 });
 
-const vessels = [
+const mockRisks: RiskZone[] = [
   {
-    id: "MV-228",
-    name: "Maersk Halifax",
-    flag: "DK",
-    status: "Berthing",
-    eta: "14:45",
-    risk: "Low",
-    speed: 4.2,
-    head: 218,
-    dest: "Berth 7",
-    x: 62,
-    y: 58,
+    id: "R-1",
+    risk_type: "PIRACY",
+    latitude: 22.42,
+    longitude: 69.38,
+    radius_km: 18,
+    description: "Restricted entry corridor - Gulf of Kutch"
   },
   {
-    id: "MV-441",
-    name: "MSC Aurora",
-    flag: "PA",
-    status: "Inbound",
-    eta: "16:20",
-    risk: "Medium",
-    speed: 12.1,
-    head: 142,
-    dest: "Berth 12",
-    x: 78,
-    y: 32,
+    id: "R-2",
+    risk_type: "WEATHER",
+    latitude: 22.76,
+    longitude: 69.85,
+    radius_km: 10,
+    description: "High wave swells (>2.5m) approaching outer harbor"
   },
   {
-    id: "MV-117",
-    name: "Ever Glory",
-    flag: "TW",
-    status: "Anchored",
-    eta: "—",
-    risk: "Low",
-    speed: 0.0,
-    head: 90,
-    dest: "Anchorage A",
-    x: 22,
-    y: 24,
-  },
-  {
-    id: "MV-908",
-    name: "CMA Beirut",
-    flag: "FR",
-    status: "Outbound",
-    eta: "Departing",
-    risk: "Low",
-    speed: 8.4,
-    head: 310,
-    dest: "Open sea",
-    x: 14,
-    y: 70,
-  },
-  {
-    id: "MV-562",
-    name: "ONE Bluebird",
-    flag: "JP",
-    status: "Inbound",
-    eta: "18:05",
-    risk: "High",
-    speed: 14.8,
-    head: 188,
-    dest: "Berth 4",
-    x: 86,
-    y: 78,
-  },
-  {
-    id: "MV-330",
-    name: "Adani Spirit",
-    flag: "IN",
-    status: "Berthed",
-    eta: "—",
-    risk: "Low",
-    speed: 0.0,
-    head: 0,
-    dest: "Berth 9",
-    x: 48,
-    y: 50,
-  },
+    id: "R-3",
+    risk_type: "CONGESTION",
+    latitude: 22.75,
+    longitude: 69.71,
+    radius_km: 5,
+    description: "Berth queue holds at berths 7-9"
+  }
 ];
 
-const riskColor = (r: string) =>
+const riskColor = (r?: string) =>
   r === "High" ? "#DC2626" : r === "Medium" ? "#D97706" : "#15803D";
+
+function MapPlaceholder() {
+  return (
+    <div className="relative h-[500px] w-full overflow-hidden rounded-lg border border-border bg-gradient-to-br from-[#0B1A33] via-[#0F2547] to-[#1B3A6B]">
+      <div className="absolute inset-0 bg-grid opacity-20" />
+      <svg
+        viewBox="0 0 100 60"
+        className="absolute inset-0 h-full w-full"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M0,40 Q25,30 40,42 T70,38 T100,32 L100,60 L0,60 Z"
+          fill="rgba(13, 148, 136, 0.15)"
+          stroke="rgba(13, 148, 136, 0.4)"
+          strokeWidth="0.3"
+        />
+        <path
+          d="M30,42 L30,46 L46,46 L46,42 Z M48,42 L48,46 L62,46 L62,42 Z"
+          fill="rgba(37,99,235,0.4)"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/20 backdrop-blur-[2px]">
+        <div className="flex flex-col items-center gap-2 text-slate-400 font-mono text-xs">
+          <span className="h-4 w-4 animate-spin rounded-full border border-slate-600 border-t-cyan-500" />
+          <span>Mounting spatial grid...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function VesselsPage() {
   const [q, setQ] = useState("");
-  const [sel, setSel] = useState(vessels[0]);
-  const filtered = vessels.filter(
-    (v) =>
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedId, setSelectedId] = useState<string | null>("MV-228");
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  // Get live streaming or simulated vessel telemetry
+  const { vessels: liveVessels, isLive, connectionStatus, messageCount, toggleLiveMode } = useAISStream();
+
+  // Find the selected vessel, fallback if not found
+  const sel = liveVessels.find((v) => v.id === selectedId) || liveVessels[0] || {
+    id: "N/A",
+    name: "No Vessel Selected",
+    flag: "—",
+    status: "—",
+    eta: "—",
+    risk: "Low",
+    speed: 0,
+    course: 0,
+    dest: "—",
+    last_position_lat: 22.8,
+    last_position_lon: 69.7,
+    type: "Cargo"
+  };
+
+  // Filter logic
+  const filtered = liveVessels.filter((v) => {
+    const matchesSearch = 
       v.name.toLowerCase().includes(q.toLowerCase()) ||
-      v.id.toLowerCase().includes(q.toLowerCase()),
-  );
+      v.id.toLowerCase().includes(q.toLowerCase());
+    
+    const matchesStatus = 
+      statusFilter === "All" || 
+      v.status?.toLowerCase() === statusFilter.toLowerCase();
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <>
       <AppTopBar
         title="Vessel Intelligence"
-        subtitle="Live AIS · 217 vessels in monitored zone"
+        subtitle={isLive ? `Live AIS Stream · Connected` : `Simulated AIS Feed · ${liveVessels.length} vessels in zone`}
       />
       <div className="p-6 grid grid-cols-12 gap-4">
+        
+        {/* Operational Map Panel */}
         <Panel
           title="Operational Map"
-          subtitle="AIS · Berth zones · Risk overlays"
-          className="col-span-12 xl:col-span-8"
-        >
-          <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-border bg-gradient-to-br from-[#0B1A33] via-[#0F2547] to-[#1B3A6B]">
-            <div className="absolute inset-0 bg-grid opacity-20" />
-            {/* Stylized coastline */}
-            <svg
-              viewBox="0 0 100 60"
-              className="absolute inset-0 h-full w-full"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0,40 Q25,30 40,42 T70,38 T100,32 L100,60 L0,60 Z"
-                fill="rgba(13, 148, 136, 0.15)"
-                stroke="rgba(13, 148, 136, 0.4)"
-                strokeWidth="0.3"
-              />
-              <path
-                d="M30,42 L30,46 L46,46 L46,42 Z M48,42 L48,46 L62,46 L62,42 Z"
-                fill="rgba(37,99,235,0.4)"
-              />
-            </svg>
-            {/* Risk zone */}
-            <div
-              className="absolute"
-              style={{
-                left: "80%",
-                top: "70%",
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(closest-side, rgba(220,38,38,0.35), transparent)",
-              }}
-            />
-            {/* Vessels */}
-            {vessels.map((v) => (
-              <button
-                key={v.id}
-                onClick={() => setSel(v)}
-                className="absolute -translate-x-1/2 -translate-y-1/2 group"
-                style={{ left: `${v.x}%`, top: `${v.y}%` }}
-              >
-                <div className="relative">
-                  <span
-                    className="absolute inset-0 rounded-full pulse-ring"
-                    style={{ background: riskColor(v.risk), opacity: 0.4 }}
-                  />
-                  <Navigation2
-                    className="relative h-4 w-4 text-white drop-shadow"
-                    style={{
-                      transform: `rotate(${v.head}deg)`,
-                      color: riskColor(v.risk),
-                    }}
-                  />
-                </div>
-                <div
-                  className={`mt-1 hidden group-hover:block absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-mono text-white ${sel.id === v.id ? "!block" : ""}`}
-                >
-                  {v.id} · {v.name}
-                </div>
-              </button>
-            ))}
-            <div className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-[10px] font-mono text-white">
-              Port of Mundra · 22.83°N 69.71°E
-            </div>
-            <div className="absolute top-2 right-2 flex gap-2 text-[10px] font-mono">
-              {[
-                ["Low", "#15803D"],
-                ["Medium", "#D97706"],
-                ["High", "#DC2626"],
-              ].map(([l, c]) => (
-                <span
-                  key={l}
-                  className="inline-flex items-center gap-1 rounded bg-black/60 px-2 py-1 text-white"
-                >
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: c }}
-                  />
-                  {l}
+          subtitle="AIS telemetry · Berth zones · Risk overlays"
+          className={isMaximized ? "col-span-12 transition-all duration-300" : "col-span-12 xl:col-span-8 transition-all duration-300"}
+          right={
+            <div className="flex items-center gap-3">
+              {isLive && (
+                <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {messageCount} packets
                 </span>
-              ))}
+              )}
+              {connectionStatus === "CONNECTING" && (
+                <span className="text-[10px] font-mono text-cyan-500 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded animate-pulse">
+                  Connecting...
+                </span>
+              )}
+              
+              {/* AIS Connection toggle */}
+              <button
+                onClick={() => toggleLiveMode(!isLive)}
+                className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md border font-medium cursor-pointer transition ${
+                  isLive
+                    ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20"
+                    : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Radio className={`h-3 w-3 ${isLive ? "animate-pulse" : ""}`} />
+                <span>{isLive ? "Disconnect AIS" : "Connect Live AIS"}</span>
+              </button>
+
+              {/* Maximize toggle */}
+              <button
+                onClick={() => setIsMaximized(!isMaximized)}
+                className="flex items-center justify-center p-1 rounded-md border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer transition"
+                title={isMaximized ? "Minimize View" : "Maximize View"}
+              >
+                {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </button>
             </div>
+          }
+        >
+          <div className={`relative w-full overflow-hidden rounded-lg border border-border transition-all duration-300 ${isMaximized ? "h-[650px]" : "h-[500px]"}`}>
+            <ClientOnly fallback={<MapPlaceholder />}>
+              <MapComponent
+                center={[22.3, 69.6]} // Center slightly out to display the broad zone
+                zoom={isMaximized ? 9 : 10}
+                vessels={liveVessels}
+                risks={mockRisks}
+                selectedVesselId={selectedId}
+                onSelectVessel={setSelectedId}
+                showFiltersInline={true}
+              />
+            </ClientOnly>
           </div>
         </Panel>
 
+        {/* Vessel Details Panel */}
         <Panel
           title="Vessel Details"
           subtitle={`${sel.id} · ${sel.name}`}
-          className="col-span-12 xl:col-span-4"
+          className={isMaximized ? "col-span-12 transition-all duration-300" : "col-span-12 xl:col-span-4 transition-all duration-300"}
         >
-          <div className="rounded-lg border border-border bg-background p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="font-display text-lg font-semibold">
-                  {sel.name}
+          <div className={`rounded-lg border border-border bg-background p-4 h-full flex flex-col justify-between ${isMaximized ? "min-h-[250px]" : "min-h-[500px]"}`}>
+            <div>
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="font-display text-lg font-semibold text-foreground">
+                    {sel.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Flag · {sel.flag}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Flag · {sel.flag}
-                </div>
+                <span
+                  className="rounded px-2 py-0.5 text-[10px] font-bold uppercase"
+                  style={{
+                    background: `${riskColor(sel.risk)}15`,
+                    color: riskColor(sel.risk),
+                    border: `1px solid ${riskColor(sel.risk)}25`
+                  }}
+                >
+                  {sel.risk || "Low"} risk
+                </span>
               </div>
-              <span
-                className="rounded px-2 py-0.5 text-[10px] font-semibold"
-                style={{
-                  background: `${riskColor(sel.risk)}15`,
-                  color: riskColor(sel.risk),
-                }}
-              >
-                {sel.risk} risk
-              </span>
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-              {[
-                ["Status", sel.status],
-                ["ETA", sel.eta],
-                ["Speed", `${sel.speed} kn`],
-                ["Heading", `${sel.head}°`],
-                ["Destination", sel.dest],
-                ["Cargo", "Containers · 4,820 TEU"],
-              ].map(([l, v]) => (
-                <div key={l} className="rounded border border-border p-2">
-                  <div className="text-muted-foreground">{l}</div>
-                  <div className="font-medium">{v}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 rounded-md bg-muted/60 p-2.5 text-[11px]">
-              <div className="font-semibold flex items-center gap-1.5">
-                <Anchor className="h-3 w-3" />
-                AI Prediction
+              
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-2 gap-2.5 text-xs">
+                {[
+                  ["Status", sel.status || "Underway"],
+                  ["ETA", sel.eta || "—"],
+                  ["Speed", `${(sel.speed ?? 0).toFixed(1)} kn`],
+                  ["Heading", `${sel.course ?? 0}°`],
+                  ["Destination", sel.dest || "Mundra Port"],
+                  ["Type", sel.type || "Cargo"],
+                ].map(([l, v]) => (
+                  <div key={l} className="rounded border border-border p-2 bg-muted/65">
+                    <div className="text-muted-foreground text-[10px] uppercase font-mono">{l}</div>
+                    <div className="font-bold text-foreground mt-0.5">{v}</div>
+                  </div>
+                ))}
               </div>
-              <div className="mt-1 text-muted-foreground">
-                Berthing window optimal at 14:42 · weather window holds for 6h ·
-                no conflicting vessels in approach lane.
+            </div>
+
+            <div className="mt-4 rounded-md bg-muted/50 border border-border p-3.5 text-[11px]">
+              <div className="font-semibold flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400">
+                <Anchor className="h-3.5 w-3.5" />
+                AI Prediction Engine
+              </div>
+              <div className="mt-1.5 text-muted-foreground leading-relaxed">
+                {sel.status === "Berthed" ? (
+                  "Vessel is berthed. Discharge operations optimal. Weather and tidal conditions stable for remaining discharge window."
+                ) : sel.status === "Berthing" ? (
+                  "Optimal berthing corridor established. Approach speed of 4.2 knots matches target fender impact threshold."
+                ) : (
+                  "Berthing window predicted at T+2.5h. Tidal corridor optimal, wind shears below limits. Recommend approach heading 218°."
+                )}
               </div>
             </div>
           </div>
         </Panel>
 
+        {/* Vessel List Panel */}
         <Panel
           title="Vessel List"
-          subtitle="All monitored AIS contacts"
+          subtitle="All active AIS contacts in sector"
           className="col-span-12"
         >
-          <div className="mb-3 flex items-center gap-2">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="relative flex-1 max-w-sm">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search vessel or IMO…"
-                className="h-9 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm outline-none focus:border-[color:var(--color-secondary)]"
+                placeholder="Search vessel by Name or MMSI..."
+                className="h-9 w-full rounded-md border border-border bg-background pl-8 pr-3 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20"
               />
             </div>
-            {["All", "Inbound", "Berthed", "Anchored", "Outbound"].map((s) => (
-              <button
-                key={s}
-                className="rounded-md border border-border bg-background px-2.5 py-1 text-xs hover:bg-muted"
-              >
-                {s}
-              </button>
-            ))}
+            <div className="flex gap-1.5">
+              {["All", "Inbound", "Berthed", "Anchored", "Outbound"].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`rounded-md border px-3 py-1 text-xs font-semibold cursor-pointer transition ${
+                    statusFilter === s
+                      ? "bg-slate-800 text-white border-slate-700 dark:bg-slate-200 dark:text-slate-900"
+                      : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-[11px] uppercase text-muted-foreground">
+          
+          <div className="overflow-x-auto rounded-lg border border-border bg-card">
+            <table className="w-full text-sm border-collapse">
+              <thead className="text-[11px] uppercase text-muted-foreground bg-muted">
                 <tr className="border-b border-border">
                   {[
-                    "ID",
-                    "Vessel",
+                    "MMSI / ID",
+                    "Vessel Name",
                     "Flag",
                     "Status",
                     "Speed",
-                    "ETA",
+                    "Heading",
                     "Destination",
                     "Risk",
                   ].map((h) => (
-                    <th key={h} className="py-2 px-3 text-left font-medium">
+                    <th key={h} className="py-2.5 px-4 text-left font-bold tracking-wider">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map((v, i) => (
-                  <motion.tr
-                    key={v.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: i * 0.03 }}
-                    className={`cursor-pointer hover:bg-muted/40 ${sel.id === v.id ? "bg-muted/30" : ""}`}
-                    onClick={() => setSel(v)}
-                  >
-                    <td className="py-2.5 px-3 font-mono text-xs">{v.id}</td>
-                    <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-2">
-                        <Ship className="h-3.5 w-3.5 text-muted-foreground" />
-                        {v.name}
-                      </div>
+              <tbody className="divide-y divide-border/60">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-8 text-center text-muted-foreground font-mono text-xs">
+                      No matching vessels found in current sector.
                     </td>
-                    <td className="py-2.5 px-3 text-xs">{v.flag}</td>
-                    <td className="py-2.5 px-3 text-xs">{v.status}</td>
-                    <td className="py-2.5 px-3 font-mono text-xs">
-                      {v.speed} kn
-                    </td>
-                    <td className="py-2.5 px-3 font-mono text-xs">{v.eta}</td>
-                    <td className="py-2.5 px-3 text-xs">
-                      <MapPin className="inline h-3 w-3 mr-1 text-muted-foreground" />
-                      {v.dest}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span
-                        className="rounded px-1.5 py-0.5 text-[10px] font-semibold"
-                        style={{
-                          background: `${riskColor(v.risk)}15`,
-                          color: riskColor(v.risk),
-                        }}
-                      >
-                        {v.risk}
-                      </span>
-                    </td>
-                  </motion.tr>
-                ))}
+                  </tr>
+                ) : (
+                  filtered.map((v, i) => (
+                    <motion.tr
+                      key={v.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                      className={`cursor-pointer hover:bg-muted/40 transition duration-100 ${selectedId === v.id ? "bg-muted font-bold text-foreground" : "text-muted-foreground"}`}
+                      onClick={() => setSelectedId(v.id)}
+                    >
+                      <td className="py-3 px-4 font-mono text-xs text-cyan-600 dark:text-cyan-400 font-semibold">{v.id}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <Ship className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                          <span className="text-foreground">{v.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-xs text-foreground/90">{v.flag}</td>
+                      <td className="py-3 px-4 text-xs text-foreground">
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className={`h-1.5 w-1.5 rounded-full ${
+                            v.status === "Berthed" ? "bg-cyan-500" :
+                            v.status === "Berthing" ? "bg-emerald-500" :
+                            v.status === "Anchored" ? "bg-amber-500" : "bg-blue-500"
+                          }`} />
+                          {v.status || "Underway"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs text-foreground/90">
+                        {(v.speed ?? 0).toFixed(1)} kn
+                      </td>
+                      <td className="py-3 px-4 font-mono text-xs text-foreground/90">
+                        {v.course ?? 0}°
+                      </td>
+                      <td className="py-3 px-4 text-xs">
+                        <div className="flex items-center gap-1.5 text-foreground/90">
+                          <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <span className="truncate max-w-[150px]">{v.dest || "Mundra Port"}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className="rounded px-2 py-0.5 text-[10px] font-bold"
+                          style={{
+                            background: `${riskColor(v.risk)}15`,
+                            color: riskColor(v.risk),
+                            border: `1px solid ${riskColor(v.risk)}25`
+                          }}
+                        >
+                          {v.risk || "Low"}
+                        </span>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

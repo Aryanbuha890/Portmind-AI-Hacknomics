@@ -1,0 +1,418 @@
+import { useState, useEffect, useRef } from "react";
+import { Vessel } from "@/components/MapComponent";
+
+const AISSTREAM_API_KEY = import.meta.env.VITE_AISSTREAM_API_KEY || "";
+const AISSTREAM_URL = import.meta.env.VITE_AISSTREAM_URL || "wss://stream.aisstream.io/v0/stream";
+
+// Bounding box around Mundra Port & surrounding Arabian Sea
+// Format: [[[minLat, minLon], [maxLat, maxLon]]]
+const MUNDRA_BOUNDING_BOX = [[[19.5, 67.0], [24.5, 72.5]]];
+
+// Map AIS Type numeric codes to category strings
+const mapAisTypeToCategory = (typeId: number): string => {
+  if (typeId >= 70 && typeId <= 79) return "Cargo";
+  if (typeId >= 80 && typeId <= 89) return "Tanker";
+  if (typeId >= 60 && typeId <= 69) return "Passenger";
+  if (typeId === 30) return "Fishing";
+  if (typeId === 35 || typeId === 36 || typeId === 55) return "Military";
+  return "Cargo"; // Fallback default
+};
+
+// Initial simulated vessels for fallback/simulation mode
+const INITIAL_SIMULATED_VESSELS: Vessel[] = [
+  {
+    id: "MV-228",
+    name: "Maersk Halifax",
+    flag: "DK",
+    status: "Berthing",
+    eta: "14:45",
+    risk: "Low",
+    speed: 4.2,
+    course: 218,
+    dest: "Berth 7",
+    last_position_lat: 22.78,
+    last_position_lon: 69.68,
+    type: "Cargo"
+  },
+  {
+    id: "MV-441",
+    name: "MSC Aurora",
+    flag: "PA",
+    status: "Inbound",
+    eta: "16:20",
+    risk: "Medium",
+    speed: 12.1,
+    course: 142,
+    dest: "Berth 12",
+    last_position_lat: 22.65,
+    last_position_lon: 69.85,
+    type: "Cargo"
+  },
+  {
+    id: "MV-117",
+    name: "Ever Glory",
+    flag: "TW",
+    status: "Anchored",
+    eta: "—",
+    risk: "Low",
+    speed: 0.0,
+    course: 90,
+    dest: "Anchorage A",
+    last_position_lat: 22.84,
+    last_position_lon: 69.52,
+    type: "Cargo"
+  },
+  {
+    id: "MV-908",
+    name: "CMA Beirut",
+    flag: "FR",
+    status: "Outbound",
+    eta: "Departing",
+    risk: "Low",
+    speed: 8.4,
+    course: 310,
+    dest: "Open sea",
+    last_position_lat: 22.58,
+    last_position_lon: 69.38,
+    type: "Cargo"
+  },
+  {
+    id: "MV-562",
+    name: "ONE Bluebird",
+    flag: "JP",
+    status: "Inbound",
+    eta: "18:05",
+    risk: "High",
+    speed: 14.8,
+    course: 188,
+    dest: "Berth 4",
+    last_position_lat: 22.42,
+    last_position_lon: 69.95,
+    type: "Tanker"
+  },
+  {
+    id: "MV-330",
+    name: "Adani Spirit",
+    flag: "IN",
+    status: "Berthed",
+    eta: "—",
+    risk: "Low",
+    speed: 0.0,
+    course: 0,
+    dest: "Berth 9",
+    last_position_lat: 22.75,
+    last_position_lon: 69.71,
+    type: "Cargo"
+  },
+  {
+    id: "MV-711",
+    name: "Everest Explorer",
+    flag: "SG",
+    status: "Inbound",
+    eta: "20:10",
+    risk: "Low",
+    speed: 10.4,
+    course: 45,
+    dest: "Anchorage B",
+    last_position_lat: 22.31,
+    last_position_lon: 68.82,
+    type: "Cargo"
+  },
+  {
+    id: "MV-882",
+    name: "Ganges Trader",
+    flag: "IN",
+    status: "Anchored",
+    eta: "—",
+    risk: "Low",
+    speed: 0.0,
+    course: 180,
+    dest: "Anchorage A",
+    last_position_lat: 22.91,
+    last_position_lon: 69.41,
+    type: "Cargo"
+  },
+  {
+    id: "MV-154",
+    name: "OOCL Tokyo",
+    flag: "HK",
+    status: "Outbound",
+    eta: "Departed",
+    risk: "Low",
+    speed: 15.2,
+    course: 220,
+    dest: "Singapore",
+    last_position_lat: 22.48,
+    last_position_lon: 69.15,
+    type: "Cargo"
+  },
+  {
+    id: "MV-369",
+    name: "INS Vikram",
+    flag: "IN",
+    status: "Inbound",
+    eta: "—",
+    risk: "Medium",
+    speed: 18.5,
+    course: 95,
+    dest: "Naval Base",
+    last_position_lat: 22.25,
+    last_position_lon: 69.55,
+    type: "Military"
+  },
+  {
+    id: "MV-505",
+    name: "Sagar Kanya",
+    flag: "IN",
+    status: "Anchored",
+    eta: "—",
+    risk: "Low",
+    speed: 4.8,
+    course: 320,
+    dest: "Fishing Zone B",
+    last_position_lat: 22.35,
+    last_position_lon: 69.21,
+    type: "Fishing"
+  },
+  {
+    id: "MV-620",
+    name: "Royal Voyager",
+    flag: "BS",
+    status: "Outbound",
+    eta: "19:00",
+    risk: "Low",
+    speed: 16.5,
+    course: 130,
+    dest: "Mumbai Port",
+    last_position_lat: 22.15,
+    last_position_lon: 70.12,
+    type: "Passenger"
+  }
+];
+
+export function useAISStream() {
+  const [vessels, setVessels] = useState<Record<string, Vessel>>({});
+  const [isLive, setIsLive] = useState<boolean>(false);
+  const [connectionStatus, setConnectionStatus] = useState<"DISCONNECTED" | "CONNECTING" | "CONNECTED" | "ERROR">("DISCONNECTED");
+  const [messageCount, setMessageCount] = useState<number>(0);
+  
+  const wsRef = useRef<WebSocket | null>(null);
+  const simulationTimerRef = useRef<number | null>(null);
+
+  // Initialize with simulated vessels
+  useEffect(() => {
+    const initialMap: Record<string, Vessel> = {};
+    INITIAL_SIMULATED_VESSELS.forEach(v => {
+      initialMap[v.id] = v;
+    });
+    setVessels(initialMap);
+  }, []);
+
+  // 1. Simulated Movement Logic (when not live)
+  const startSimulation = () => {
+    if (simulationTimerRef.current) return;
+    
+    simulationTimerRef.current = window.setInterval(() => {
+      setVessels(prev => {
+        const next = { ...prev };
+        Object.keys(next).forEach(id => {
+          const v = next[id];
+          // Only move moving vessels
+          if (v.speed > 0) {
+            const rad = (v.course * Math.PI) / 180;
+            // standard approximation: 1 knot ~ 0.00027 degrees per second
+            // let's scale slightly for visual feedback in real-time updates
+            const speedFactor = v.speed * 0.00015;
+            const dLat = Math.cos(rad) * speedFactor;
+            const dLon = Math.sin(rad) * speedFactor;
+            
+            next[id] = {
+              ...v,
+              last_position_lat: v.last_position_lat + dLat,
+              last_position_lon: v.last_position_lon + dLon
+            };
+          }
+        });
+        return next;
+      });
+    }, 1500);
+  };
+
+  const stopSimulation = () => {
+    if (simulationTimerRef.current) {
+      clearInterval(simulationTimerRef.current);
+      simulationTimerRef.current = null;
+    }
+  };
+
+  // Run simulation if not live
+  useEffect(() => {
+    if (!isLive) {
+      startSimulation();
+    } else {
+      stopSimulation();
+    }
+    return () => stopSimulation();
+  }, [isLive]);
+
+  // 2. Real-time Live Connection (WebSocket)
+  const connectLive = () => {
+    if (wsRef.current) return;
+
+    setConnectionStatus("CONNECTING");
+    
+    try {
+      const socket = new WebSocket(AISSTREAM_URL);
+      wsRef.current = socket;
+
+      socket.onopen = () => {
+        setConnectionStatus("CONNECTED");
+        
+        // Subscribe to messages inside the specified bounding box
+        const subMsg = {
+          APIKey: AISSTREAM_API_KEY,
+          BoundingBoxes: MUNDRA_BOUNDING_BOX
+        };
+        
+        socket.send(JSON.stringify(subMsg));
+        console.log("AISStream WebSocket subscription message sent.");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          setMessageCount(prev => prev + 1);
+
+          const meta = data.MetaData;
+          if (!meta || !meta.MMSI) return;
+
+          const mmsiStr = meta.MMSI_String || String(meta.MMSI);
+          const type = data.MessageType;
+
+          setVessels(prev => {
+            const existing = prev[mmsiStr] || {
+              id: mmsiStr,
+              name: meta.ShipName || `MMSI ${mmsiStr}`,
+              type: "Cargo",
+              flag: "Unknown",
+              last_position_lat: meta.latitude || 0,
+              last_position_lon: meta.longitude || 0,
+              speed: 0,
+              course: 0,
+              eta: "—",
+              status: "Underway",
+              dest: "Mundra Port",
+              risk: "Low"
+            };
+
+            // Update positional data
+            let updated = { ...existing };
+            updated.last_position_lat = meta.latitude || updated.last_position_lat;
+            updated.last_position_lon = meta.longitude || updated.last_position_lon;
+
+            if (type === "PositionReport" && data.Message?.PositionReport) {
+              const pos = data.Message.PositionReport;
+              updated.speed = pos.Sog ?? updated.speed;
+              updated.course = pos.Cog ?? updated.course;
+              
+              // Calculate dynamic navigation status if numeric status is mapped
+              if (pos.NavigationalStatus !== undefined) {
+                const statusMap: Record<number, string> = {
+                  0: "Underway",
+                  1: "Berthed",
+                  2: "Anchored",
+                  5: "Moored",
+                  8: "Inbound"
+                };
+                updated.status = statusMap[pos.NavigationalStatus] || updated.status;
+              }
+            } else if (type === "ShipStaticData" && data.Message?.ShipStaticData) {
+              const stat = data.Message.ShipStaticData;
+              updated.name = stat.Name?.trim() || updated.name;
+              updated.type = mapAisTypeToCategory(stat.Type);
+              updated.dest = stat.Destination?.trim() || updated.dest;
+              
+              if (stat.Eta) {
+                updated.eta = `${stat.Eta.Month}/${stat.Eta.Day} ${String(stat.Eta.Hour).padStart(2, '0')}:${String(stat.Eta.Minute).padStart(2, '0')}`;
+              }
+            }
+
+            // Determine Risk dynamically
+            const category = mapAisTypeToCategory(data.Message?.ShipStaticData?.Type || 0);
+            if (category === "Tanker") {
+              updated.risk = "High";
+            } else if (updated.speed > 16) {
+              updated.risk = "Medium";
+            } else {
+              updated.risk = "Low";
+            }
+
+            return {
+              ...prev,
+              [mmsiStr]: updated
+            };
+          });
+        } catch (err) {
+          console.error("Error parsing AISStream payload:", err);
+        }
+      };
+
+      socket.onerror = (err) => {
+        console.error("AISStream WebSocket error:", err);
+        setConnectionStatus("ERROR");
+      };
+
+      socket.onclose = () => {
+        console.log("AISStream WebSocket connection closed.");
+        setConnectionStatus("DISCONNECTED");
+        wsRef.current = null;
+      };
+      
+    } catch (err) {
+      console.error("Failed to connect to AISStream WebSocket:", err);
+      setConnectionStatus("ERROR");
+      wsRef.current = null;
+    }
+  };
+
+  const disconnectLive = () => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+      setConnectionStatus("DISCONNECTED");
+    }
+  };
+
+  // Toggle Live/Simulation mode
+  const toggleLiveMode = (enableLive: boolean) => {
+    setIsLive(enableLive);
+    if (enableLive) {
+      connectLive();
+    } else {
+      disconnectLive();
+      // Reset vessels to simulated list upon leaving live mode to prevent UI crowding
+      const initialMap: Record<string, Vessel> = {};
+      INITIAL_SIMULATED_VESSELS.forEach(v => {
+        initialMap[v.id] = v;
+      });
+      setVessels(initialMap);
+      setMessageCount(0);
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      disconnectLive();
+      stopSimulation();
+    };
+  }, []);
+
+  return {
+    vessels: Object.values(vessels),
+    isLive,
+    connectionStatus,
+    messageCount,
+    toggleLiveMode
+  };
+}
