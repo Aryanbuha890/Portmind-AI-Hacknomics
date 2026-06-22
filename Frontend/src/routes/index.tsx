@@ -1258,7 +1258,13 @@ function DashboardSection() {
     <section className="relative overflow-hidden py-24 bg-[#05060F] border-b border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-16 text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">Command Center</span>
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+            </span>
+            Command Center
+          </span>
           <h2 className="mt-3 font-display text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
             One platform. <span className="text-white/50">Custom operating systems.</span>
           </h2>
@@ -1293,68 +1299,381 @@ function DashboardSection() {
 }
 
 function Trust() {
-  const logoItems = [
+  const leftLogoItems = [
     { src: "/DP World.png", alt: "DP World", h: "h-14" },
-    { src: "/Maersk.png", alt: "Maersk", h: "h-14" },
     { src: "/MSC.png", alt: "MSC", h: "h-14" },
-    { src: "/Adani Ports.png", alt: "Adani Ports", h: "h-14" },
     { src: "/PSA.png", alt: "PSA", h: "h-10" },
-    { src: "/JNPT.png", alt: "JNPT", h: "h-14" },
     { src: "/CMA CGM.png", alt: "CMA CGM", h: "h-14" },
+    { src: "/CONCOR.png", alt: "CONCOR", h: "h-14" },
+    { src: "/Maersk.png", alt: "Maersk", h: "h-14" },
+    { src: "/Adani Ports.png", alt: "Adani Ports", h: "h-14" },
+    { src: "/JNPT.png", alt: "JNPT", h: "h-14" },
     { src: "/Evergreen.png", alt: "Evergreen", h: "h-14" },
   ];
 
-  const scrollLogos = [...logoItems, ...logoItems, ...logoItems];
+  const rightLogoItems = [
+    { src: "/Maersk.png", alt: "Maersk", h: "h-14" },
+    { src: "/Evergreen.png", alt: "Evergreen", h: "h-14" },
+    { src: "/JNPT.png", alt: "JNPT", h: "h-14" },
+    { src: "/Adani Ports.png", alt: "Adani Ports", h: "h-14" },
+    { src: "/CONCOR.png", alt: "CONCOR", h: "h-14" },
+    { src: "/MSC.png", alt: "MSC", h: "h-14" },
+    { src: "/DP World.png", alt: "DP World", h: "h-14" },
+    { src: "/PSA.png", alt: "PSA", h: "h-10" },
+    { src: "/CMA CGM.png", alt: "CMA CGM", h: "h-14" },
+  ];
+
+  // Duplicating exactly twice for a seamless infinite loop translation
+  const leftLogos = [...leftLogoItems, ...leftLogoItems];
+  const rightLogosScroll = [...rightLogoItems, ...rightLogoItems];
 
   const stats = [
-    { num: 1.8, decimals: 1, prefix: "", suffix: "M+", l: "Containers Tracked" },
-    { num: 99.2, decimals: 1, prefix: "", suffix: "%", l: "Safety Compliance" },
-    { num: 217, decimals: 0, prefix: "", suffix: "", l: "Active Vessels" },
-    { num: 98.7, decimals: 1, prefix: "", suffix: "%", l: "AI Accuracy" },
-    { num: 14, decimals: 0, prefix: "", suffix: "", l: "Deployed Ports" },
-    { num: 99.99, decimals: 2, prefix: "", suffix: "%", l: "System Uptime" },
+    { 
+      num: 1.8, 
+      decimals: 1, 
+      prefix: "", 
+      suffix: "M+", 
+      l: "Containers Tracked", 
+      icon: Container,
+      color: "text-cyan-400",
+      glow: "rgba(6, 182, 212, 0.15)",
+      bg: "from-cyan-950/40 to-[#060814]/80",
+      border: "border-cyan-500/25 group-hover:border-cyan-400/80",
+      numGradient: "from-cyan-400 to-blue-500"
+    },
+    { 
+      num: 99.2, 
+      decimals: 1, 
+      prefix: "", 
+      suffix: "%", 
+      l: "Safety Compliance", 
+      icon: CheckCircle2,
+      color: "text-emerald-400",
+      glow: "rgba(16, 185, 129, 0.15)",
+      bg: "from-emerald-950/40 to-[#060814]/80",
+      border: "border-emerald-500/25 group-hover:border-emerald-400/80",
+      numGradient: "from-emerald-400 to-teal-500"
+    },
+    { 
+      num: 217, 
+      decimals: 0, 
+      prefix: "", 
+      suffix: "", 
+      l: "Active Vessels", 
+      icon: Ship,
+      color: "text-cyan-400",
+      glow: "rgba(6, 182, 212, 0.15)",
+      bg: "from-cyan-950/40 to-[#060814]/80",
+      border: "border-cyan-500/25 group-hover:border-cyan-400/80",
+      numGradient: "from-cyan-400 to-blue-500"
+    },
+    { 
+      num: 98.7, 
+      decimals: 1, 
+      prefix: "", 
+      suffix: "%", 
+      l: "AI Accuracy", 
+      icon: Brain,
+      color: "text-emerald-400",
+      glow: "rgba(16, 185, 129, 0.15)",
+      bg: "from-emerald-950/40 to-[#060814]/80",
+      border: "border-emerald-500/25 group-hover:border-emerald-400/80",
+      numGradient: "from-emerald-400 to-teal-500"
+    },
+    { 
+      num: 14, 
+      decimals: 0, 
+      prefix: "", 
+      suffix: "", 
+      l: "Deployed Ports", 
+      icon: MapPin,
+      color: "text-cyan-400",
+      glow: "rgba(6, 182, 212, 0.15)",
+      bg: "from-cyan-950/40 to-[#060814]/80",
+      border: "border-cyan-500/25 group-hover:border-cyan-400/80",
+      numGradient: "from-cyan-400 to-blue-500"
+    },
+    { 
+      num: 99.99, 
+      decimals: 2, 
+      prefix: "", 
+      suffix: "%", 
+      l: "System Uptime", 
+      icon: Activity,
+      color: "text-emerald-400",
+      glow: "rgba(16, 185, 129, 0.15)",
+      bg: "from-emerald-950/40 to-[#060814]/80",
+      border: "border-emerald-500/25 group-hover:border-emerald-400/80",
+      numGradient: "from-emerald-400 to-teal-500"
+    },
   ];
 
   return (
-    <section className="bg-surface-2 py-20 overflow-hidden relative border-y border-white/5">
-      <div className="mx-auto max-w-6xl px-6">
-        <h3 className="text-center text-xs uppercase tracking-[0.2em] font-bold text-white/60">
-          Trusted across the global maritime logistics ecosystem
-        </h3>
+    <section className="bg-[#05060F] py-24 overflow-hidden relative border-y border-white/5">
+      <style>{`
+        @keyframes marquee-ltr {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        @keyframes marquee-rtl {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes float-bob-1 {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes float-bob-2 {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(3px); }
+        }
+        @keyframes float-bob-3 {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+        @keyframes cyber-rotate-cw {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes cyber-rotate-ccw {
+          0% { transform: rotate(360deg); }
+          100% { transform: rotate(0deg); }
+        }
+        @keyframes logo-glow-pulse {
+          0%, 100% {
+            filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.5));
+            transform: scale(1);
+          }
+          50% {
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.85));
+            transform: scale(1.05);
+          }
+        }
+        .animate-marquee-ltr {
+          animation: marquee-ltr 42s linear infinite;
+        }
+        .animate-marquee-rtl {
+          animation: marquee-rtl 42s linear infinite;
+        }
+        .animate-float-bob-1 {
+          animation: float-bob-1 4.5s ease-in-out infinite;
+        }
+        .animate-float-bob-2 {
+          animation: float-bob-2 5.5s ease-in-out infinite;
+        }
+        .animate-float-bob-3 {
+          animation: float-bob-3 5s ease-in-out infinite;
+        }
+        .animate-cyber-cw {
+          animation: cyber-rotate-cw 20s linear infinite;
+        }
+        .animate-cyber-ccw {
+          animation: cyber-rotate-ccw 15s linear infinite;
+        }
+        .animate-logo-glow {
+          animation: logo-glow-pulse 4s ease-in-out infinite;
+        }
+      `}</style>
+
+      {/* Heading Section */}
+      <div className="mx-auto max-w-4xl px-6 text-center mb-16">
+        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400 mb-3">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+          </span>
+          Ecosystem Partners
+        </span>
+        <h2 className="font-display text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+          Trusted Across the Global Logistics Ecosystem
+        </h2>
+        <p className="mt-4 text-sm sm:text-base text-white/60 leading-relaxed max-w-2xl mx-auto">
+          Connect seamlessly with shipping lines, freight forwarders, ports, warehouses, customs partners, and enterprise logistics providers through LogiMind.
+        </p>
       </div>
 
-      {/* Infinite Logo Carousel */}
-      <div
-        className="mt-8 relative w-full overflow-hidden py-5 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-32 before:bg-gradient-to-r before:from-[#05060F] before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-32 after:bg-gradient-to-l after:from-[#05060F] after:to-transparent"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95) 15%, rgba(255, 255, 255, 0.95) 85%, transparent)"
-        }}
-      >
-        <div className="flex w-max gap-16 animate-logo-scroll cursor-default">
-          {scrollLogos.map((logo, idx) => (
-            <div key={idx} className="flex items-center justify-center min-w-[200px] h-18">
-              <img
-                src={logo.src}
-                alt={logo.alt}
-                loading="lazy"
-                decoding="async"
-                className={`${logo.h} object-contain opacity-90 hover:opacity-100 transition-all duration-300`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Centerpiece Logo Carousel Section */}
+      <div className="mt-8 relative w-full flex items-center justify-center py-5">
+        
+        {/* Background center fading overlay to mask logos as they pass behind the center card */}
+        <div 
+          className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-64 z-10 pointer-events-none"
+          style={{
+            backgroundImage: "linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0) 100%)"
+          }}
+        />
 
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 md:grid-cols-6">
-          {stats.map((s, idx) => (
-            <div key={idx} className="bg-[#0A0E1F]/60 p-6 text-center">
-              <div className="font-display text-3xl font-semibold text-gradient bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-                <AnimatedCounter value={s.num} decimals={s.decimals} prefix={s.prefix} suffix={s.suffix} />
+        {/* Horizontal Marquee strip (the rectangle part) with white background */}
+        <div
+          className="w-full h-32 sm:h-36 overflow-hidden relative before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-32 before:bg-gradient-to-r before:from-[#05060F] before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-32 after:bg-gradient-to-l after:from-[#05060F] after:to-transparent"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95) 15%, rgba(255, 255, 255, 0.95) 85%, transparent)"
+          }}
+        >
+          {/* Left Carousel (LTR, scrolls to center) */}
+          <div 
+            className="absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden flex items-center justify-start"
+            style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
+          >
+            {/* 3D rotated wrapper */}
+            <div 
+              style={{
+                transform: "rotateY(16deg) translateZ(0)",
+                transformOrigin: "right center",
+                transformStyle: "preserve-3d",
+                width: "100%",
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center"
+              }}
+            >
+              <div 
+                className="flex animate-marquee-ltr"
+                style={{
+                  width: "max-content",
+                  gap: "64px",
+                  alignItems: "center"
+                }}
+              >
+                {leftLogos.map((logo, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`flex-shrink-0 animate-float-bob-${(idx % 3) + 1} flex items-center justify-center`}
+                    style={{ width: "150px" }}
+                  >
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className={`${logo.h} object-contain opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-300`}
+                    />
+                  </div>
+                ))}
               </div>
-              <div className="mt-1 text-xs text-white/50">{s.l}</div>
             </div>
-          ))}
+          </div>
+
+          {/* Right Carousel (RTL, scrolls to center) */}
+          <div 
+            className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden flex items-center justify-start"
+            style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
+          >
+            {/* 3D rotated wrapper */}
+            <div 
+              style={{
+                transform: "rotateY(-16deg) translateZ(0)",
+                transformOrigin: "left center",
+                transformStyle: "preserve-3d",
+                width: "100%",
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center"
+              }}
+            >
+              <div 
+                className="flex animate-marquee-rtl"
+                style={{
+                  width: "max-content",
+                  gap: "64px",
+                  alignItems: "center"
+                }}
+              >
+                {rightLogosScroll.map((logo, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`flex-shrink-0 animate-float-bob-${(idx % 3) + 1} flex items-center justify-center`}
+                    style={{ width: "150px" }}
+                  >
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className={`${logo.h} object-contain opacity-90 hover:opacity-100 hover:scale-105 transition-all duration-300`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Centerpiece highlighted LogiMind logo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center pointer-events-none select-none">
+          {/* Rotating holographic backglow */}
+          <div className="absolute h-40 w-40 sm:h-48 sm:w-48 rounded-full bg-[conic-gradient(from_0deg,rgba(6,182,212,0.25)_0%,rgba(99,102,241,0.1)_30%,rgba(168,85,247,0.15)_60%,rgba(6,182,212,0.25)_100%)] blur-xl opacity-80 animate-cyber-cw pointer-events-none" />
+
+          {/* Outer cyber ring 1 (Dashed, Cyan, CW) */}
+          <div className="absolute h-36 w-36 sm:h-44 sm:w-44 rounded-full border border-dashed border-cyan-500/40 animate-cyber-cw pointer-events-none" />
+
+          {/* Inner cyber ring 2 (Dashed, Indigo, CCW) */}
+          <div className="absolute h-30 w-30 sm:h-38 sm:w-38 rounded-full border border-dashed border-indigo-500/30 animate-cyber-ccw pointer-events-none" />
+          
+          {/* Crosshair grid overlay */}
+          <div className="absolute h-26 w-26 sm:h-32 sm:w-32 rounded-full border border-white/5 flex items-center justify-center animate-pulse pointer-events-none">
+            <div className="absolute top-0 bottom-0 w-px bg-cyan-500/10" />
+            <div className="absolute left-0 right-0 h-px bg-cyan-500/10" />
+          </div>
+
+          {/* Main glassmorphic orb (interactive) */}
+          <div className="relative group flex items-center justify-center h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-gradient-to-br from-[#0a0f28]/95 to-[#060814]/98 border border-cyan-500/40 shadow-[0_0_35px_rgba(6,182,212,0.25)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] hover:border-cyan-400/80 transition-all duration-500 pointer-events-auto cursor-pointer">
+            {/* Inner glowing radial sweep */}
+            <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.25),transparent_70%)] opacity-80 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            
+            {/* Pulsing ring inside border */}
+            <span className="absolute inset-1 rounded-full border border-cyan-400/10 pointer-events-none" />
+            
+            {/* Glowing logo image */}
+            <img
+              src="/LogiMind Logo.png"
+              alt="LogiMind AI centerpiece"
+              className="h-12 w-12 sm:h-14 sm:w-14 object-contain animate-logo-glow group-hover:scale-110 transition-transform duration-500"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      {/* Stats container */}
+      <div className="mx-auto max-w-6xl px-6 mt-20">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-6">
+          {stats.map((s, idx) => {
+            const Icon = s.icon;
+            return (
+              <div 
+                key={idx} 
+                className="relative group overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-[#0a0f24]/70 to-[#05060f]/90 p-5 text-center transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] cursor-default select-none"
+              >
+                {/* Specific colored glow behind the card on hover */}
+                <div 
+                  className="absolute -inset-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-xl"
+                  style={{
+                    background: `radial-gradient(circle, ${s.glow} 0%, transparent 70%)`
+                  }}
+                />
+
+                {/* Subtle top border illumination */}
+                <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-opacity duration-300 group-hover:via-white/20" />
+
+                {/* Cyber Card Inner Border (visible by default, flares on hover) */}
+                <div className={`absolute inset-0 rounded-2xl border transition-all duration-500 ${s.border}`} />
+
+                {/* Metric Icon top right */}
+                <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/5 border border-white/5 text-neutral-400 transition-all duration-300">
+                  <Icon className={`h-3.5 w-3.5 ${s.color}`} />
+                </div>
+
+                {/* Value representation */}
+                <div className={`font-display text-2xl sm:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${s.numGradient} mt-2`}>
+                  <AnimatedCounter value={s.num} decimals={s.decimals} prefix={s.prefix} suffix={s.suffix} />
+                </div>
+
+                {/* Label */}
+                <div className="mt-2 text-xs text-white/50 font-medium group-hover:text-white/80 transition-colors duration-300">{s.l}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1421,7 +1740,13 @@ function JourneySection() {
         {/* Section heading with Navigation Arrows */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-4xl">
-            <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#38bdf8]">System Phases</span>
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+              System Phases
+            </span>
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl sm:whitespace-nowrap">
               Start your journey with LogiMind AI
             </h2>
@@ -1560,75 +1885,56 @@ function HowItWorks() {
       <div className="mx-auto max-w-7xl px-6">
         <SectionHead eyebrow="How it works" title="Five steps to closed-loop port autonomy." />
         <ol className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          {steps.map(({ n, cat, t, d, img, imgSrcSet }, idx) => (
+          {steps.map(({ n, cat, t, d, img }, idx) => (
             <motion.li
               key={n}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.05 }}
               transition={{ duration: 0.5, delay: idx * 0.05, ease: "easeOut" }}
-              className="relative group overflow-hidden rounded-[24px] h-[450px] flex flex-col justify-end p-6 bg-transparent shadow-2xl transition-all duration-300 hover:shadow-[0_0_35px_rgba(37,99,235,0.3)] hover:-translate-y-1"
+              className="relative group overflow-hidden rounded-[24px] h-[450px] p-[1.5px] bg-gradient-to-br from-white/40 via-cyan-500/25 to-blue-500/20 transition-all duration-300 hover:shadow-[0_0_35px_rgba(37,99,235,0.3)] hover:-translate-y-1 hover:from-white/80 hover:via-cyan-500/70 hover:to-blue-500/50 cursor-default select-none"
             >
-              {/* Subtle normal gradient border */}
-              <div
-                className="pointer-events-none absolute -inset-px rounded-[24px] transition-opacity duration-300"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(37, 99, 235, 0.25) 50%, rgba(56, 189, 248, 0.2) 100%)",
-                  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-                  WebkitMaskComposite: "xor",
-                  maskComposite: "exclude",
-                  padding: "1.5px",
-                }}
-              />
-              {/* Highlighted hover gradient border */}
-              <div
-                className="pointer-events-none absolute -inset-px rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(37, 99, 235, 0.85) 50%, rgba(34, 211, 238, 0.95) 100%)",
-                  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-                  WebkitMaskComposite: "xor",
-                  maskComposite: "exclude",
-                  padding: "1.5px",
-                }}
-              />
-              <div className="absolute inset-0 z-0">
-                <img
-                  src={img}
-                  srcSet={imgSrcSet}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-                  alt={t}
-                  loading={idx === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  fetchPriority={idx === 0 ? "high" : "auto"}
-                  className="w-full h-full object-cover transform-gpu"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020205] via-[#020205]/60 to-transparent opacity-90" />
-              </div>
-
-              {/* Content Container */}
-              <div className="relative z-10 flex flex-col h-full justify-between">
-                {/* Top Row: Center-aligned Stencil Stiled Number */}
-                <div className="flex justify-center w-full mt-2">
-                  <span 
-                    className="text-6xl font-black text-white select-none tracking-widest"
-                    style={{ fontFamily: "'Big Shoulders Stencil Display', sans-serif" }}
-                  >
-                    {parseInt(n)}
-                  </span>
+              {/* Inner content container with dark background */}
+              <div className="relative w-full h-full rounded-[22.5px] overflow-hidden flex flex-col justify-end p-6 bg-[#05060F]/85">
+                
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src={img}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                    alt={t}
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="w-full h-full object-cover transform-gpu group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020205] via-[#020205]/70 to-transparent opacity-95" />
                 </div>
 
-                {/* Bottom Row: Text Details with Fixed Height for Perfect Horizontal Alignment */}
-                <div className="text-left mt-auto h-[160px] flex flex-col justify-start">
-                  <div className="text-[10px] font-bold tracking-[0.22em] text-cyan-400 uppercase mb-2">
-                    {cat}
+                {/* Content Container */}
+                <div className="relative z-10 flex flex-col h-full justify-between pointer-events-none">
+                  {/* Top Row: Center-aligned Stencil Stiled Number */}
+                  <div className="flex justify-center w-full mt-2">
+                    <span 
+                      className="text-6xl font-black text-white/95 select-none tracking-widest"
+                      style={{ fontFamily: "'Big Shoulders Stencil Display', sans-serif" }}
+                    >
+                      {parseInt(n)}
+                    </span>
                   </div>
-                  <h3 className="font-display text-xl font-bold text-white tracking-tight leading-snug group-hover:text-cyan-300 transition-colors duration-300">
-                    {t}
-                  </h3>
-                  <p className="mt-2 text-xs text-white/65 leading-relaxed font-sans line-clamp-4">
-                    {d}
-                  </p>
+
+                  {/* Bottom Row: Text Details with Fixed Height for Perfect Horizontal Alignment */}
+                  <div className="text-left mt-auto h-[160px] flex flex-col justify-start">
+                    <div className="text-[10px] font-bold tracking-[0.22em] text-cyan-400 uppercase mb-2">
+                      {cat}
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-white tracking-tight leading-snug group-hover:text-cyan-300 transition-colors duration-300">
+                      {t}
+                    </h3>
+                    <p className="mt-2 text-xs text-white/65 leading-relaxed font-sans line-clamp-4">
+                      {d}
+                    </p>
+                  </div>
                 </div>
+
               </div>
             </motion.li>
           ))}
