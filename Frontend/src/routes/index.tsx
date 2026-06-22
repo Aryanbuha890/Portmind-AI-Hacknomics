@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
@@ -72,6 +72,20 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location.hash]);
+
   return (
     <div className="min-h-screen bg-[#05060F] text-white antialiased overflow-x-clip">
       <Nav />
@@ -1505,8 +1519,7 @@ function HowItWorks() {
       cat: "INGEST",
       t: "Multi-Source Ingest",
       d: "Continuous data ingestion from port CCTV, AIS signals, manifests, and weather feeds.",
-      img: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=640&h=900&q=75",
-      imgSrcSet: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=400&h=600&q=75 400w, https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=640&h=900&q=75 640w",
+      img: "/H1.jpg",
       i: Database,
     },
     {
@@ -1514,8 +1527,7 @@ function HowItWorks() {
       cat: "PERCEIVE",
       t: "Vision Perception",
       d: "Deep learning models detect container numbers, gauge structures, and verify safety PPE.",
-      img: "https://images.unsplash.com/photo-1529310399831-ed472b81d589?auto=format&fit=crop&w=640&h=900&q=75",
-      imgSrcSet: "https://images.unsplash.com/photo-1529310399831-ed472b81d589?auto=format&fit=crop&w=400&h=600&q=75 400w, https://images.unsplash.com/photo-1529310399831-ed472b81d589?auto=format&fit=crop&w=640&h=900&q=75 640w",
+      img: "/H2.jpg",
       i: Eye,
     },
     {
@@ -1523,8 +1535,7 @@ function HowItWorks() {
       cat: "REASON",
       t: "Agentic Reasoning",
       d: "LangGraph-powered AI agents plan yard movements, verify manifests, and trigger warning sirens.",
-      img: "https://images.unsplash.com/photo-1742459785723-667110cf8326?auto=format&fit=crop&w=640&h=900&q=75",
-      imgSrcSet: "https://images.unsplash.com/photo-1742459785723-667110cf8326?auto=format&fit=crop&w=400&h=600&q=75 400w, https://images.unsplash.com/photo-1742459785723-667110cf8326?auto=format&fit=crop&w=640&h=900&q=75 640w",
+      img: "/H3.jpg",
       i: Brain,
     },
     {
@@ -1532,8 +1543,7 @@ function HowItWorks() {
       cat: "PREDICT",
       t: "Predictive Safety",
       d: "ML classifiers forecast machine breakdown schedules and alert operations beforehand.",
-      img: "https://images.unsplash.com/photo-1647663013612-d751ba1802f0?auto=format&fit=crop&w=640&h=900&q=75",
-      imgSrcSet: "https://images.unsplash.com/photo-1647663013612-d751ba1802f0?auto=format&fit=crop&w=400&h=600&q=75 400w, https://images.unsplash.com/photo-1647663013612-d751ba1802f0?auto=format&fit=crop&w=640&h=900&q=75 640w",
+      img: "/H4.jpg",
       i: ShieldAlert,
     },
     {
@@ -1541,8 +1551,7 @@ function HowItWorks() {
       cat: "ACT",
       t: "Closed-Loop Action",
       d: "Automated routing logs clear gate entry, slots cranes, and optimizes truck turnarounds.",
-      img: "https://images.unsplash.com/photo-1575528941322-c74397246f19?auto=format&fit=crop&w=640&h=900&q=75",
-      imgSrcSet: "https://images.unsplash.com/photo-1575528941322-c74397246f19?auto=format&fit=crop&w=400&h=600&q=75 400w, https://images.unsplash.com/photo-1575528941322-c74397246f19?auto=format&fit=crop&w=640&h=900&q=75 640w",
+      img: "/H5.jpg",
       i: Cpu,
     },
   ];
@@ -1558,8 +1567,30 @@ function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.05 }}
               transition={{ duration: 0.5, delay: idx * 0.05, ease: "easeOut" }}
-              className="relative group overflow-hidden rounded-[24px] h-[450px] flex flex-col justify-end p-6 border-2 border-white/10 shadow-2xl transition-[border-color,transform] duration-300 hover:border-cyan-500/60 hover:-translate-y-1"
+              className="relative group overflow-hidden rounded-[24px] h-[450px] flex flex-col justify-end p-6 bg-transparent shadow-2xl transition-all duration-300 hover:shadow-[0_0_35px_rgba(37,99,235,0.3)] hover:-translate-y-1"
             >
+              {/* Subtle normal gradient border */}
+              <div
+                className="pointer-events-none absolute -inset-px rounded-[24px] transition-opacity duration-300"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(37, 99, 235, 0.25) 50%, rgba(56, 189, 248, 0.2) 100%)",
+                  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                  padding: "1.5px",
+                }}
+              />
+              {/* Highlighted hover gradient border */}
+              <div
+                className="pointer-events-none absolute -inset-px rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(37, 99, 235, 0.85) 50%, rgba(34, 211, 238, 0.95) 100%)",
+                  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                  padding: "1.5px",
+                }}
+              />
               <div className="absolute inset-0 z-0">
                 <img
                   src={img}
