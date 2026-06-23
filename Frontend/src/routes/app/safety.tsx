@@ -71,10 +71,10 @@ function SafetyPage() {
                 className="w-full h-full object-cover"
                 onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
               />
-              
+
               {/* Red AI detection box overlaying the worker's head/body (Only visible between 8s and 10s) */}
               {currentTime >= 8 && currentTime <= 10 && (
-                <div 
+                <div
                   className="absolute border-2 border-red-500 rounded animate-pulse"
                   style={{
                     left: "31%",
