@@ -1,0 +1,33 @@
+# Secrets & Local Configurations
+.env
+.env.local
+.env.*.local
+*.env
+Backend/what_if_simulator/.env
+
+# Python Caches & Compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Python Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Model Binaries & Datasets (Generated during training)
+Backend/what_if_simulator/*.pkl
+Backend/what_if_simulator/port_operations_dataset.csv
+
+# Frontend caches & builds (Frontend has its own local .gitignore, but root-level insurance is good)
+Frontend/dist/
+Frontend/.tanstack/
+Frontend/node_modules/
+
+# OS specific files
+.DS_Store
+Thumbs.db
