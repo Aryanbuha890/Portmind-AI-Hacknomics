@@ -1,0 +1,96 @@
+{
+  "training_timestamp": "2026-06-24 09:21:27",
+  "dataset_rows": 8000,
+  "num_features": 11,
+  "features": [
+    "wind_speed",
+    "visibility",
+    "precipitation",
+    "temperature",
+    "vessel_queue",
+    "yard_occupancy",
+    "is_holiday",
+    "vessel_type",
+    "cargo_volume_teu",
+    "route_distance_nm",
+    "port_congestion_level"
+  ],
+  "models": {
+    "crane_efficiency": {
+      "best_model": "RandomForest",
+      "filename": "crane_model.pkl",
+      "features": [
+        "wind_speed",
+        "visibility",
+        "precipitation",
+        "temperature",
+        "vessel_queue",
+        "yard_occupancy",
+        "is_holiday",
+        "vessel_type",
+        "cargo_volume_teu",
+        "route_distance_nm",
+        "port_congestion_level"
+      ],
+      "mae": 1.2256,
+      "r2_score": 0.9477
+    },
+    "turnaround_time_hours": {
+      "best_model": "XGBoost",
+      "filename": "vessel_model.pkl",
+      "features": [
+        "wind_speed",
+        "visibility",
+        "precipitation",
+        "temperature",
+        "vessel_queue",
+        "yard_occupancy",
+        "is_holiday",
+        "vessel_type",
+        "cargo_volume_teu",
+        "route_distance_nm",
+        "port_congestion_level"
+      ],
+      "mae": 1.7151,
+      "r2_score": 0.8673
+    },
+    "rail_dispatch_delay_mins": {
+      "best_model": "RandomForest",
+      "filename": "rail_model.pkl",
+      "features": [
+        "wind_speed",
+        "visibility",
+        "precipitation",
+        "temperature",
+        "vessel_queue",
+        "yard_occupancy",
+        "is_holiday",
+        "vessel_type",
+        "cargo_volume_teu",
+        "route_distance_nm",
+        "port_congestion_level"
+      ],
+      "mae": 2.3889,
+      "r2_score": 0.8014
+    },
+    "eta_delay_minutes": {
+      "best_model": "XGBoost",
+      "filename": "eta_model.pkl",
+      "features": [
+        "wind_speed",
+        "visibility",
+        "precipitation",
+        "temperature",
+        "vessel_queue",
+        "yard_occupancy",
+        "is_holiday",
+        "vessel_type",
+        "cargo_volume_teu",
+        "route_distance_nm",
+        "port_congestion_level"
+      ],
+      "mae": 26.5334,
+      "r2_score": 0.0499
+    }
+  }
+}

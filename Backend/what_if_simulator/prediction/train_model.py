@@ -52,7 +52,10 @@ def run_training_pipeline():
     dataset_path = 'port_operations_dataset.csv'
     if not os.path.exists(dataset_path):
         print(f"Dataset not found at {dataset_path}. Launching generator script...")
-        from generate_data import generate_synthetic_dataset
+        try:
+            from .generate_data import generate_synthetic_dataset
+        except ImportError:
+            from generate_data import generate_synthetic_dataset
         generate_synthetic_dataset(output_path=dataset_path)
         
     df = pd.read_csv(dataset_path)

@@ -1,6 +1,6 @@
 import os
 import requests
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -9,9 +9,10 @@ import uvicorn
 # Load env variables from .env
 load_dotenv()
 
-# Import ML predict and SimPy simulation logic
-from predict import predict_scenario, predict_vessel_etas, generate_ai_report, compute_kpis
-from simulator import run_monte_carlo_simulation
+# Import ML predict and SimPy simulation logic from subpackages
+from prediction.predict import predict_scenario, predict_vessel_etas, generate_ai_report, compute_kpis
+from prediction.simulator import run_monte_carlo_simulation
+from doc_ai.doc_ai_parser import extract_text_from_file, parse_document_by_template
 
 app = FastAPI(title="PortMind AI — Port Operations Intelligence API")
 
@@ -190,6 +191,28 @@ async def weather(req: WeatherRequest):
             return {"status": "success", "weather": default_weather, "predictions": preds}
         except Exception as e2:
             raise HTTPException(status_code=500, detail=f"API error: {str(e)}. Fallbacks failed: {str(e2)}")
+
+@app.post("/api/docs-ai/parse")
+async def parse_document(
+    file: UploadFile,
+    template_id: str = Form("TMP-001")
+):
+    """
+    Parse an uploaded manifest PDF or TXT file using local DPD-NEE NLP model.
+    """
+    try:
+        file_bytes = await file.read()
+        filename = file.filename or "document.txt"
+        extracted_text = extract_text_from_file(file_bytes, filename)
+        parsed_fields = parse_document_by_template(extracted_text, template_id)
+        return {
+            "status": "success",
+            "filename": filename,
+            "template_id": template_id,
+            "fields": parsed_fields
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Document parsing failed: {str(e)}")
 
 if __name__ == '__main__':
     # Run server locally on port 8000

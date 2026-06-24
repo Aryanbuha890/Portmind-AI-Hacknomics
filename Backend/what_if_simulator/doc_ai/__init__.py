@@ -1,0 +1,1 @@
+# Smart Documentation AI Package

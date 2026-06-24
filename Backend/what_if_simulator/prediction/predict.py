@@ -230,14 +230,14 @@ def generate_ai_report(predictions, weather_params, vessels):
     api_key = os.getenv("GEMINI_API_KEY")
 
     if not api_key:
-        print("GEMINI_API_KEY not found. Using template-based fallback report.")
+        # print("GEMINI_API_KEY not found. Using template-based fallback report.")
         return generate_fallback_report(predictions, weather_params, vessels)
 
     # Check error cooldown to avoid slow Google API round-trips when rate-limited/429
     current_time = time.time()
     if current_time - _last_gemini_error_time < _GEMINI_ERROR_COOLDOWN_SEC:
         remaining = int(_GEMINI_ERROR_COOLDOWN_SEC - (current_time - _last_gemini_error_time))
-        print(f"Gemini API in error cooldown ({remaining}s remaining). Directly using fallback template report.")
+        # print(f"Gemini API in error cooldown ({remaining}s remaining). Directly using fallback template report.")
         return generate_fallback_report(predictions, weather_params, vessels)
 
     try:
@@ -299,10 +299,10 @@ IMPORTANT: Keep total response under 350 words. Use markdown formatting. Be data
 
     except Exception as e:
         _last_gemini_error_time = time.time()  # Start cooldown timer
-        if "429" in str(e) or "quota" in str(e).lower():
-            print(f"Gemini API Free Tier quota limit reached (429). Falling back to premium template report. Cooldown of {_GEMINI_ERROR_COOLDOWN_SEC}s initiated.")
-        else:
-            print(f"Gemini API exception: {e}. Cooldown of {_GEMINI_ERROR_COOLDOWN_SEC}s initiated. Using fallback report.")
+        # if "429" in str(e) or "quota" in str(e).lower():
+        #     print(f"Gemini API Free Tier quota limit reached (429). Falling back to premium template report. Cooldown of {_GEMINI_ERROR_COOLDOWN_SEC}s initiated.")
+        # else:
+        #     print(f"Gemini API exception: {e}. Cooldown of {_GEMINI_ERROR_COOLDOWN_SEC}s initiated. Using fallback report.")
         return generate_fallback_report(predictions, weather_params, vessels)
 
 

@@ -1,8 +1,10 @@
 import simpy
 import random
 import numpy as np
-import os
-from predict import predict_scenario
+try:
+    from .predict import predict_scenario
+except ImportError:
+    from predict import predict_scenario
 
 class PortTerminal(object):
     """Models a port terminal layout with berths and cranes."""

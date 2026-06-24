@@ -27,6 +27,10 @@ import {
   Ship,
   ShieldAlert,
   Wrench,
+  AlertOctagon,
+  Users,
+  Compass,
+  Zap,
 } from "lucide-react";
 import { Panel, ChartTip } from "./index";
 
@@ -148,6 +152,8 @@ function CommandCenter() {
               value={217}
               accent="#2563EB"
               trend="+12"
+              sparklinePath="M 0 20 Q 25 5, 50 18 T 100 8"
+              subtext="14 inbound · 8 at berth"
             />
             <Kpi
               icon={Container}
@@ -155,6 +161,8 @@ function CommandCenter() {
               value={12408}
               accent="#0D9488"
               trend="+4.2%"
+              sparklinePath="M 0 25 Q 25 12, 50 18 T 100 5"
+              subtext="7,842 discharging"
             />
             <Kpi
               icon={ShieldAlert}
@@ -163,6 +171,8 @@ function CommandCenter() {
               accent="#DC2626"
               trend="-2"
               warn
+              sparklinePath="M 0 10 Q 25 25, 50 12 T 100 20"
+              subtext="1 critical · 2 warnings"
             />
             <Kpi
               icon={Wrench}
@@ -171,6 +181,8 @@ function CommandCenter() {
               suffix="%"
               accent="#15803D"
               trend="-1.4%"
+              sparklinePath="M 0 12 Q 25 15, 50 8 T 100 12"
+              subtext="4/5 cranes fully active"
             />
           </div>
         </div>
@@ -342,7 +354,7 @@ function CommandCenter() {
               {craneHealth.map((c) => (
                 <div
                   key={c.c}
-                  className={`rounded-lg border p-3 ${c.c === "C-4" ? "border-[color:var(--color-warning)]/40 bg-[color:var(--color-warning)]/5" : "border-border"}`}
+                  className={`rounded-lg border p-3 ${c.c === "C-4" ? "border-[color:var(--color-warning)]/40 bg-[color:var(--color-warning)]/5" : "border-primary/45"}`}
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-mono font-semibold">{c.c}</span>
@@ -414,6 +426,59 @@ function CommandCenter() {
               })}
             </ul>
           </Panel>
+
+          {/* Quick Actions Panel next to Live Events to balance bottom space */}
+          <Panel
+            title="Operational Control Panel"
+            subtitle="System manual override dispatch triggers"
+            className="col-span-12 xl:col-span-4"
+          >
+            <div className="space-y-3">
+              <button 
+                onClick={() => alert("SYSTEM: Broadasting marine safety warnings regarding current wind metrics.")}
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-yellow-200/50 bg-yellow-50/20 hover:bg-yellow-50/40 dark:border-yellow-500/20 dark:bg-yellow-500/[0.04] dark:hover:bg-yellow-500/[0.08] text-yellow-700 dark:text-yellow-400 transition cursor-pointer text-xs font-semibold"
+              >
+                <div className="flex items-center gap-2">
+                  <AlertOctagon className="h-3.5 w-3.5" />
+                  <span>Broadcast Storm Alert</span>
+                </div>
+                <span className="h-2 w-2 rounded-full bg-yellow-500 animate-ping" />
+              </button>
+
+              <button 
+                onClick={() => alert("SYSTEM: Safety officer auto-dispatched to Yard Zone B.")}
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-blue-200/50 bg-blue-50/20 hover:bg-blue-50/40 dark:border-blue-500/20 dark:bg-blue-500/[0.04] dark:hover:bg-blue-500/[0.08] text-blue-700 dark:text-blue-400 transition cursor-pointer text-xs font-semibold"
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="h-3.5 w-3.5" />
+                  <span>Dispatch Safety Officer</span>
+                </div>
+                <span className="text-[10px] font-mono text-blue-500/70 dark:text-blue-400/70">Yard B</span>
+              </button>
+
+              <button 
+                onClick={() => alert("SYSTEM: Emergency crane shutdown. Quay locking mechanisms activated.")}
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-red-200/50 bg-red-50/20 hover:bg-red-50/40 dark:border-red-500/20 dark:bg-red-500/[0.04] dark:hover:bg-red-500/[0.08] text-red-700 dark:text-red-400 transition cursor-pointer text-xs font-semibold"
+              >
+                <div className="flex items-center gap-2">
+                  <Wrench className="h-3.5 w-3.5" />
+                  <span>Initialize Gantry Crane Lock</span>
+                </div>
+                <span className="text-[9px] uppercase font-mono px-1 rounded bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400">Lockout</span>
+              </button>
+
+              <button 
+                onClick={() => alert("SYSTEM: Initiating SimPy rail freight scheduling optimizer.")}
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-emerald-200/50 bg-emerald-50/20 hover:bg-emerald-50/40 dark:border-emerald-500/20 dark:bg-emerald-500/[0.04] dark:hover:bg-emerald-500/[0.08] text-emerald-700 dark:text-emerald-400 transition cursor-pointer text-xs font-semibold"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="h-3.5 w-3.5" />
+                  <span>Optimize Rail Dispatch</span>
+                </div>
+                <span className="text-[9px] font-mono text-emerald-600 dark:text-emerald-400">AI Optimize</span>
+              </button>
+            </div>
+          </Panel>
         </div>
       </div>
     </>
@@ -428,6 +493,8 @@ function Kpi({
   trend,
   warn,
   suffix,
+  sparklinePath,
+  subtext,
 }: {
   icon: any;
   label: string;
@@ -436,30 +503,52 @@ function Kpi({
   trend: string;
   warn?: boolean;
   suffix?: string;
+  sparklinePath: string;
+  subtext: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="col-span-1 rounded-xl border border-border bg-card p-4"
+      className="col-span-1 rounded-xl border border-primary/45 bg-card p-4 flex flex-col justify-between h-44 shadow-sm"
     >
-      <div className="flex items-center justify-between">
-        <span
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md"
-          style={{ background: `${accent}15`, color: accent }}
-        >
-          <Icon className="h-4 w-4" />
-        </span>
-        <span
-          className={`text-[10px] font-mono ${warn ? "text-[color:var(--color-warning)]" : "text-[color:var(--color-success)]"}`}
-        >
-          {trend}
-        </span>
+      <div>
+        <div className="flex items-center justify-between">
+          <span
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md"
+            style={{ background: `${accent}15`, color: accent }}
+          >
+            <Icon className="h-4 w-4" />
+          </span>
+          <span
+            className={`text-[10px] font-mono ${warn ? "text-[color:var(--color-warning)] animate-pulse" : "text-[color:var(--color-success)]"}`}
+          >
+            {trend}
+          </span>
+        </div>
+        <div className="mt-2.5 font-display text-2xl font-semibold">
+          <AnimatedCounter value={value} suffix={suffix} />
+        </div>
+        <div className="text-[11px] text-muted-foreground font-medium">{label}</div>
       </div>
-      <div className="mt-3 font-display text-2xl font-semibold">
-        <AnimatedCounter value={value} suffix={suffix} />
+
+      {/* Subtext and mini sparkline trend graph to utilize empty space */}
+      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-1">
+        <span className="text-[9px] text-muted-foreground/75 truncate w-[60%]">
+          {subtext}
+        </span>
+        <div className="w-14 h-5 opacity-70 shrink-0">
+          <svg viewBox="0 0 100 30" className="w-full h-full overflow-visible">
+            <path
+              d={sparklinePath}
+              fill="none"
+              stroke={accent}
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
       </div>
-      <div className="text-xs text-muted-foreground">{label}</div>
     </motion.div>
   );
 }
@@ -470,11 +559,11 @@ function RiskScore() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="col-span-12 lg:col-span-4 rounded-xl border border-border bg-gradient-to-br from-card to-[color:var(--color-muted)]/60 p-5"
+      className="col-span-12 lg:col-span-4 rounded-xl border border-primary/45 bg-gradient-to-br from-card to-[color:var(--color-muted)]/60 p-5 shadow-sm"
     >
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="font-display text-sm font-semibold">
+          <h3 className="font-display text-sm font-semibold tracking-tight">
             Global Port Risk Score
           </h3>
           <p className="text-xs text-muted-foreground">

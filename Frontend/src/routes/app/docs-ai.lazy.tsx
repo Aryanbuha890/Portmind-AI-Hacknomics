@@ -3,6 +3,7 @@ import { AppTopBar } from "@/components/AppSidebar";
 import { Panel } from "./index";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   FileSearch,
   UploadCloud,
@@ -57,7 +58,10 @@ type ParsedField = {
   value: string;
   confidence: number;
   status: "verified" | "flagged";
+  source?: string;
 };
+
+const BACKEND_URL = "http://127.0.0.1:8000";
 
 function DocsAiPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("TMP-001");
@@ -83,38 +87,110 @@ function DocsAiPage() {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0].name);
+      processFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      processFile(e.target.files[0]);
     }
   };
 
   const selectMockFile = (name: string) => {
-    processFile(name);
+    // Generate text content in memory to simulate uploading a manifest
+    let dummyText = "";
+    if (name.includes("safety_hazard")) {
+      dummyText = `
+        DANGEROUS GOODS MANIFEST (IMDG)
+        Vessel Name: MV-Oceanic-Bravo
+        IMO Number: IMO 9987625
+        IMDG Hazard class: Class 9 (Miscellaneous Dangerous Goods)
+        UN numbers: UN 3480 (Lithium Ion Cells)
+        Stowage position: Bay 14 Row 02 Tier 06
+        Emergency action code: F-A, S-I (Spill Schedule Code)
+        Cargo Description: High-Voltage Lithium Ion Battery Pack Modules
+      `;
+    } else {
+      dummyText = `
+        CUSTOMS DECLARATION
+        Vessel Identity: MV-Geneva (IMO 9823019)
+        Origin Port: Rotterdam (NLRTM)
+        Cargo Category: Industrial Spares / Electronics
+        Consignee: Mundra Terminal Logistics Ltd.
+        Total TEU count: 2800 TEUs
+        Declared Cargo Value: $4,290,100 USD
+        HS Codes: 8504.40.90, 8507.60.00
+      `;
+    }
+
+    const blob = new Blob([dummyText], { type: "text/plain" });
+    const file = new File([blob], name, { type: "text/plain" });
+    processFile(file);
   };
 
-  const processFile = (name: string) => {
-    setFileName(name);
+  const processFile = async (file: File) => {
+    setFileName(file.name);
     setFileUploaded(true);
     setIsParsing(true);
     setParsedData(null);
 
-    // Simulate OCR OCR/Parsing
-    setTimeout(() => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("template_id", selectedTemplate);
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/docs-ai/parse`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const response = await res.json();
+      if (response.status === "success") {
+        setParsedData(response.fields);
+        toast.success(`Parsed manifest file: ${file.name}`);
+      } else {
+        toast.error(response.message || "Failed to parse document");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(`Error connecting to Python FastAPI backend: ${err.message}. Make sure server is running on port 8000!`);
+      setFileUploaded(false);
+    } finally {
       setIsParsing(false);
-      setParsedData([
-        { key: "Vessel Identity", value: "MV-Geneva (IMO 9823019)", confidence: 99, status: "verified" },
-        { key: "Origin Port", value: "Rotterdam (NLRTM)", confidence: 98, status: "verified" },
-        { key: "Cargo Category", value: "Industrial Spares / Electronics", confidence: 94, status: "verified" },
-        { key: "Hazardous Materials", value: "Lithium Ion Cells (UN 3480) - Class 9", confidence: 97, status: "flagged" },
-        { key: "Total Declared Value", value: "$4,290,100 USD", confidence: 89, status: "verified" },
-        { key: "Customs Entry Ref", value: "IN-MUN-2026-X8", confidence: 95, status: "verified" },
-      ]);
-    }, 1800);
+    }
   };
 
   const activeTemplate = templates.find((t) => t.id === selectedTemplate) || templates[0];
 
+  const handleExport = () => {
+    if (!parsedData) return;
+    const content = JSON.stringify({
+      filename: fileName,
+      template_id: selectedTemplate,
+      template_name: activeTemplate.name,
+      extracted_at: new Date().toISOString(),
+      fields: parsedData
+    }, null, 2);
+    
+    const blob = new Blob([content], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `extracted_manifest_${fileName.replace(/\.[^/.]+$/, "")}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Extraction report exported as JSON.");
+  };
+
   return (
-    <div className="dark flex h-screen flex-col bg-[#070B19] text-white">
+    <div className="dark flex h-screen flex-col bg-[#070B19] text-white overflow-hidden">
       <AppTopBar
         title="Smart Documentation AI"
         subtitle="Automatic Bill of Lading parsing · Dangerous goods verification · Customs OCR automation"
@@ -133,14 +209,23 @@ function DocsAiPage() {
                 onDragOver={handleDrag}
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
+                onClick={() => !fileUploaded && document.getElementById("file-upload")?.click()}
                 className={`flex flex-col items-center justify-center border-2 border-dashed rounded-2xl h-60 text-center p-6 transition ${
                   dragActive
                     ? "border-cyan-400 bg-cyan-400/[0.03]"
                     : fileUploaded
                       ? "border-indigo-500/50 bg-[#0d162d]/50"
-                      : "border-white/10 hover:border-white/20 bg-white/[0.01]"
+                      : "border-white/10 hover:border-white/20 bg-white/[0.01] cursor-pointer"
                 }`}
               >
+                <input
+                  type="file"
+                  id="file-upload"
+                  onChange={handleFileChange}
+                  accept=".pdf,.txt,.csv,.json"
+                  className="hidden"
+                />
+                
                 <UploadCloud
                   className={`h-12 w-12 mb-3 transition ${
                     fileUploaded ? "text-indigo-400" : "text-white/20"
@@ -149,7 +234,7 @@ function DocsAiPage() {
                 {fileUploaded ? (
                   <div>
                     <h4 className="text-sm font-semibold text-white/80">{fileName}</h4>
-                    <p className="mt-1 text-xs text-white/40">File loaded successfully.</p>
+                    <p className="mt-1 text-xs text-white/40">File loaded and parsed locally.</p>
                   </div>
                 ) : (
                   <div>
@@ -158,31 +243,16 @@ function DocsAiPage() {
                   </div>
                 )}
 
-                {/* Prebuilt simulation manifest files */}
-                {!fileUploaded && (
-                  <div className="mt-6 flex flex-wrap justify-center gap-2">
-                    <button
-                      onClick={() => selectMockFile("bill_of_lading_998.pdf")}
-                      className="rounded-lg border border-white/5 bg-white/5 px-2.5 py-1.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white transition"
-                    >
-                      Use BoL_998.pdf (Sample)
-                    </button>
-                    <button
-                      onClick={() => selectMockFile("safety_hazard_IMDG_manifest.pdf")}
-                      className="rounded-lg border border-white/5 bg-white/5 px-2.5 py-1.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white transition"
-                    >
-                      Use IMDG_Manifest.pdf (Sample)
-                    </button>
-                  </div>
-                )}
+
 
                 {fileUploaded && (
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setFileUploaded(false);
                       setParsedData(null);
                     }}
-                    className="mt-4 text-xs text-red-400 hover:text-red-300 transition"
+                    className="mt-4 text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
                   >
                     Clear uploaded file
                   </button>
@@ -197,11 +267,17 @@ function DocsAiPage() {
                   {templates.map((t) => (
                     <div
                       key={t.id}
-                      onClick={() => setSelectedTemplate(t.id)}
+                      onClick={() => {
+                        setSelectedTemplate(t.id);
+                        if (fileUploaded) {
+                          setFileUploaded(false);
+                          setParsedData(null);
+                        }
+                      }}
                       className={`cursor-pointer rounded-xl border p-3.5 transition ${
                         selectedTemplate === t.id
-                          ? "border-[color:var(--color-secondary)] bg-gradient-to-r from-card to-[color:var(--color-secondary)]/5"
-                          : "border-white/5 bg-card/60"
+                          ? "border-cyan-500 bg-[#0f1730]"
+                          : "border-white/5 bg-[#0e162d]/45 hover:border-white/15"
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -232,7 +308,7 @@ function DocsAiPage() {
                   className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-[#0a1124]/90 h-[500px]"
                 >
                   <Sparkles className="h-10 w-10 text-cyan-400 animate-pulse mb-3" />
-                  <div className="text-xs font-semibold text-white/80">Parsing manifest entries via AI OCR...</div>
+                  <div className="text-xs font-semibold text-white/80">Parsing manifest entries via local DPD-NEE NLP Model...</div>
                   <div className="mt-2 h-1 w-32 overflow-hidden rounded-full bg-white/10">
                     <motion.div
                       animate={{ left: ["-100%", "100%"] }}
@@ -252,7 +328,7 @@ function DocsAiPage() {
                     title="AI Entity Extraction Results"
                     subtitle="Neural parsed fields matched against compliance checklists"
                   >
-                    <div className="space-y-3.5">
+                    <div className="space-y-3.5 max-h-[380px] overflow-y-auto pr-1">
                       {parsedData.map((field) => {
                         const isFlagged = field.status === "flagged";
                         return (
@@ -265,12 +341,17 @@ function DocsAiPage() {
                             }`}
                           >
                             <div className="min-w-0 flex-1">
-                              <span className="text-[10px] text-white/40 font-mono block uppercase">
+                              <span className="text-[9px] text-white/40 font-mono block uppercase">
                                 {field.key}
                               </span>
                               <span className="text-xs font-semibold text-white/85 block mt-0.5">
                                 {field.value}
                               </span>
+                              {field.source && (
+                                <span className="text-[7.5px] font-mono text-white/20 block mt-0.5 uppercase">
+                                  Rule match: {field.source}
+                                </span>
+                              )}
                             </div>
 
                             <div className="text-right">
@@ -296,14 +377,16 @@ function DocsAiPage() {
                   {/* Manifest action options */}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => alert("Manifest Approved and sent to customs.")}
-                      className="flex-1 flex h-10 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-500 transition text-xs"
+                      onClick={() => {
+                        toast.success("Manifest approved and sent to customs clearance.");
+                      }}
+                      className="flex-1 flex h-10 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-500 transition text-xs cursor-pointer"
                     >
                       <CheckCircle className="h-4 w-4" /> Approve Manifest
                     </button>
                     <button
-                      onClick={() => alert("Hazard declaration exported.")}
-                      className="flex-1 flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition text-xs"
+                      onClick={handleExport}
+                      className="flex-1 flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition text-xs cursor-pointer"
                     >
                       <Download className="h-4 w-4" /> Export Report
                     </button>
