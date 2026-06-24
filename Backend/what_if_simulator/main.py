@@ -10,10 +10,10 @@ import uvicorn
 load_dotenv()
 
 # Import ML predict and SimPy simulation logic
-from predict import predict_scenario
+from predict import predict_scenario, predict_vessel_etas, generate_ai_report, compute_kpis
 from simulator import run_monte_carlo_simulation
 
-app = FastAPI(title="LogiMind What-If Simulator REST API")
+app = FastAPI(title="PortMind AI — Port Operations Intelligence API")
 
 # Configure CORS Middleware
 app.add_middleware(
@@ -24,7 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Input schemas
+# ──────────────────────────────────────────────────────
+# Input Schemas
+# ──────────────────────────────────────────────────────
+
 class SimulateRequest(BaseModel):
     wind: float
     visibility: float
@@ -40,8 +43,23 @@ class WeatherRequest(BaseModel):
     vessels: int
     yard: float
 
+class PredictRequest(BaseModel):
+    wind_speed: float
+    visibility: float
+    precipitation: float
+    temperature: float
+    vessel_queue: int
+    yard_occupancy: float
+    is_holiday: int = 0
+
+
+# ──────────────────────────────────────────────────────
+# Endpoints
+# ──────────────────────────────────────────────────────
+
 @app.post("/api/simulate")
 async def simulate(req: SimulateRequest):
+    """Run full ML + SimPy Monte Carlo simulation with custom parameters."""
     try:
         results = run_monte_carlo_simulation(
             wind_speed=req.wind,
@@ -57,8 +75,65 @@ async def simulate(req: SimulateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.post("/api/predict")
+async def predict(req: PredictRequest):
+    """
+    Fast ML prediction endpoint.
+    Returns: operational predictions + vessel ETAs + AI report + KPIs.
+    """
+    try:
+        # 1. Run ML predictions for the scenario
+        predictions = predict_scenario(
+            wind_speed=req.wind_speed,
+            visibility=req.visibility,
+            precipitation=req.precipitation,
+            temperature=req.temperature,
+            vessel_queue=req.vessel_queue,
+            yard_occupancy=req.yard_occupancy,
+            is_holiday=req.is_holiday
+        )
+
+        # 2. Predict ETA delays for demo vessel fleet
+        vessels = predict_vessel_etas(
+            wind_speed=req.wind_speed,
+            visibility=req.visibility,
+            precipitation=req.precipitation,
+            temperature=req.temperature,
+            vessel_queue=req.vessel_queue,
+            yard_occupancy=req.yard_occupancy,
+            is_holiday=req.is_holiday
+        )
+
+        # 3. Build weather params dict for report
+        weather_params = {
+            'wind_speed': req.wind_speed,
+            'visibility': req.visibility,
+            'precipitation': req.precipitation,
+            'temperature': req.temperature,
+        }
+
+        # 4. Generate AI analysis report (Gemini or fallback)
+        ai_report = generate_ai_report(predictions, weather_params, vessels)
+
+        # 5. Compute KPIs
+        kpis = compute_kpis(predictions, vessels)
+
+        return {
+            "status": "success",
+            "predictions": predictions,
+            "vessels": vessels,
+            "ai_report": ai_report,
+            "kpis": kpis,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/weather")
 async def weather(req: WeatherRequest):
+    """Fetch real-time weather and return ML predictions."""
     api_key = os.getenv("OPENWEATHER_API_KEY")
     if not api_key:
         # Fallback to Rotterdam default metrics if API Key is not found

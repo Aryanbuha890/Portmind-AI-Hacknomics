@@ -22,6 +22,7 @@ env/
 # Model Binaries & Datasets (Generated during training)
 Backend/what_if_simulator/*.pkl
 Backend/what_if_simulator/port_operations_dataset.csv
+Backend/what_if_simulator/model_metadata.json
 
 # Frontend caches & builds (Frontend has its own local .gitignore, but root-level insurance is good)
 Frontend/dist/

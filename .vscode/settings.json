@@ -1,0 +1,4 @@
+{
+  "pyrefly.enabled": false,
+  "python.analysis.diagnosticMode": "openFilesOnly"
+}
