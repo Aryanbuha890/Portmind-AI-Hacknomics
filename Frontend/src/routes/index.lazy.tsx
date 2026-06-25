@@ -3812,7 +3812,7 @@ function Footer() {
         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5">
           <Link to="/privacy-policy" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
           <Link to="/terms-and-conditions" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
-          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Security Details</a>
+          <Link to="/security-details" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Security Details</Link>
           <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</a>
         </div>
         <div className="whitespace-nowrap">
