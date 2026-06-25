@@ -3813,7 +3813,7 @@ function Footer() {
           <Link to="/privacy-policy" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
           <Link to="/terms-and-conditions" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
           <Link to="/security-details" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Security Details</Link>
-          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</a>
+          <Link to="/manage-cookies" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</Link>
         </div>
         <div className="whitespace-nowrap">
           © {year} LogiMind AI B.V. All rights reserved.
