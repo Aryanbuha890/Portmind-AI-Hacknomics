@@ -203,7 +203,6 @@ function Nav() {
             { to: "/", hash: "ecosystem", t: "Ecosystem" },
             { to: "/", hash: "platform", t: "Modules" },
             { to: "/", hash: "pricing", t: "Pricing" },
-            { to: "/contact", hash: undefined, t: "Contact" },
           ].map((i) => (
             <Link
               key={i.t}
@@ -262,7 +261,6 @@ function Nav() {
                 { to: "/", hash: "ecosystem", t: "Ecosystem" },
                 { to: "/", hash: "platform", t: "Modules" },
                 { to: "/", hash: "pricing", t: "Pricing" },
-                { to: "/contact", hash: undefined, t: "Contact" },
               ].map((i) => (
                 <Link
                   key={i.t}
@@ -3558,12 +3556,12 @@ export function FAQ() {
 
         <p className="mt-4 text-neutral-400 text-sm sm:text-base">
           Haven't found what you're looking for?{" "}
-          <Link
-            to="/contact"
+          <a
+            href="mailto:support@logimind.ai"
             className="text-[#38bdf8] hover:text-sky-300 transition-colors font-medium underline underline-offset-4 decoration-sky-500/30"
           >
-            Contact us.
-          </Link>
+            Email our support team.
+          </a>
         </p>
 
         <div className="mt-16 max-w-3xl mx-auto flex flex-col border-t border-white/5 text-left">
@@ -3611,212 +3609,497 @@ export function FAQ() {
 function PricingSection() {
   const tiers = [
     {
-      badge: "Starter / Pilot",
+      badge: "Dev Pass",
       title: "Developer Pilot",
       price: "$4,900",
-      period: "/ month",
+      period: "Month",
       desc: "Perfect for testing automation pipelines in a single yard segment or crane berth.",
-      features: [
-        "Up to 2 active OCR camera streams",
-        "Real-time wagon & container parsing",
-        "Standard analytics dashboard",
-        "Email & Community support",
-        "99.0% SLA uptime guarantee"
+      details: [
+        { label: "Streams", value: "2 OCR Feeds" },
+        { label: "SLA", value: "99.0% Uptime" },
+        { label: "Scheduler", value: "Standard AI" },
+        { label: "Support", value: "Email Support" }
       ],
-      btnText: "Start 14-Day Pilot",
-      accentColor: "#06b6d4", // Cyan
-      badgeBg: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-      featured: false,
+      barcodeId: "LM-01-PILOT",
+      seatNum: "01",
+      accentColor: "#06b6d4",
+      accentGlow: "rgba(6, 182, 212, 0.25)",
+      cardBg: "#0b121f",
+      cardBgLight: "#131d31"
     },
     {
-      badge: "Autonomous Port",
+      badge: "Pro Pass",
       title: "Terminal Pro",
       price: "$12,500",
-      period: "/ month",
+      period: "Month",
       desc: "Designed for mid-sized port terminals aiming for full operational autonomy.",
-      features: [
-        "Up to 12 active OCR camera streams",
-        "Real-time deblur restoration pipeline",
-        "LangGraph multi-agent scheduler access",
-        "Predictive maintenance telemetry",
-        "24/7 Phone & Slack support",
-        "99.9% SLA uptime guarantee"
+      details: [
+        { label: "Streams", value: "12 OCR Feeds" },
+        { label: "SLA", value: "99.9% Uptime" },
+        { label: "Scheduler", value: "LangGraph Agent" },
+        { label: "Support", value: "24/7 Phone/Slack" }
       ],
-      btnText: "Upgrade to Pro",
-      accentColor: "#a855f7", // Purple
-      badgeBg: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-      featured: true,
+      barcodeId: "LM-02-PRO",
+      seatNum: "02",
+      accentColor: "#a855f7",
+      accentGlow: "rgba(168, 85, 247, 0.35)",
+      cardBg: "#140c24",
+      cardBgLight: "#201438"
     },
     {
-      badge: "Enterprise Orchestration",
+      badge: "VIP Pass",
       title: "Enterprise Port",
       price: "Custom",
-      period: "",
+      period: "Contact Sales",
       desc: "Complete digital-twin orchestration for global ports and multi-terminal operations.",
-      features: [
-        "Unlimited camera streams",
-        "Dedicated GPU cluster hosting (edge/cloud)",
-        "Custom OCR parser training support",
-        "On-site installation & integration",
-        "Dedicated TAM (Technical Account Manager)",
-        "99.99% SLA uptime guarantee"
+      details: [
+        { label: "Streams", value: "Unlimited Feeds" },
+        { label: "SLA", value: "99.99% Uptime" },
+        { label: "Scheduler", value: "Custom Runtimes" },
+        { label: "Support", value: "Dedicated TAM" }
       ],
-      btnText: "Contact Sales",
-      accentColor: "#f43f5e", // Rose
-      badgeBg: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-      featured: false,
+      barcodeId: "LM-03-ENT",
+      seatNum: "99",
+      accentColor: "#f43f5e",
+      accentGlow: "rgba(244, 63, 94, 0.25)",
+      cardBg: "#220c18",
+      cardBgLight: "#331224"
     }
   ];
 
   return (
     <section id="pricing" className="py-28 bg-[#05060F] border-t border-white/5 relative overflow-hidden">
-      {/* Styles */}
+      {/* Dynamic Ticket CSS Styles */}
       <style>{`
-        .price-card {
+        .ticket-canvas {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1em 0;
+        }
+
+        .ticket-wrapper {
+          font-size: 11px;
+          perspective: 1000px;
+          display: inline-block;
+          width: 100%;
+          max-width: 27em;
+        }
+
+        .ticket {
           position: relative;
-          background-color: hsla(240, 15%, 9%, 0.85);
-          border-radius: 2.25rem;
-          box-shadow: 0px -16px 24px 0px rgba(255, 255, 255, 0.05) inset;
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          width: 100%;
+          color: var(--t-text-main, #f8fafc);
+          font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+          transform-style: preserve-3d;
+          transition:
+            transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+            box-shadow 0.6s ease;
+          box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.8),
+            0 0 0 1px rgba(255, 255, 255, 0.05);
+          background: transparent;
+          filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.5));
+          text-align: left;
         }
 
-        .price-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0px -16px 24px 0px rgba(255, 255, 255, 0.08) inset;
+        .ticket-wrapper:hover .ticket {
+          transform: rotateX(5deg) rotateY(-10deg) scale(1.02);
+          box-shadow:
+            20px 20px 40px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            -5px -5px 20px var(--t-accent-glow);
         }
 
-        .price-card-border {
-          overflow: hidden;
-          pointer-events: none;
-          position: absolute;
-          z-index: 0;
-          inset: -1.5px;
-          border-radius: 2.25rem;
-          padding: 1.5px;
-          background-image: linear-gradient(
-            0deg,
-            hsl(0, 0%, 20%) -50%,
-            hsl(0, 0%, 10%) 100%
-          );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          transition: all 0.4s ease;
-        }
-
-        .price-card:hover .price-card-border {
-          background-image: linear-gradient(
-            135deg,
-            var(--price-accent-color) 0%,
-            rgba(255, 255, 255, 0.15) 100%
-          );
-        }
-
-        .price-card-featured .price-card-border {
-          background-image: linear-gradient(
-            135deg,
-            #a855f7 0%,
-            #6366f1 50%,
-            #06b6d4 100%
-          );
-        }
-
-        .price-card-featured::before {
+        .ticket::after {
           content: "";
-          pointer-events: none;
           position: absolute;
-          z-index: -1;
-          inset: -2px;
-          border-radius: 2.25rem;
+          inset: 0;
+          border-radius: 1.5em;
+          pointer-events: none;
           background: linear-gradient(
-            135deg,
-            #a855f7 0%,
-            #6366f1 50%,
-            #06b6d4 100%
+            115deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            transparent 60%,
+            transparent 100%
           );
-          filter: blur(12px);
-          opacity: 0.25;
-          transition: opacity 0.4s ease;
+          z-index: 10;
+          background-size: 250% 250%;
+          background-position: 100% 100%;
+          transition: background-position 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+          mix-blend-mode: overlay;
         }
 
-        .price-card-featured:hover::before {
-          opacity: 0.45;
-          filter: blur(18px);
+        .ticket-wrapper:hover .ticket::after {
+          background-position: 0% 0%;
+        }
+
+        .t-main {
+          padding: 2.2em;
+          position: relative;
+          overflow: hidden;
+          background: radial-gradient(
+              circle at bottom left,
+              transparent 1.2em,
+              var(--t-bg) 1.25em
+            ),
+            radial-gradient(circle at bottom right, transparent 1.2em, var(--t-bg) 1.25em);
+          background-size: 51% 100%;
+          background-position:
+            bottom left,
+            bottom right;
+          background-repeat: no-repeat;
+          border-top-left-radius: 1.5em;
+          border-top-right-radius: 1.5em;
+          min-height: 29.5em;
+        }
+
+        .t-main::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image: linear-gradient(
+              var(--t-accent-glow) 1px,
+              transparent 1px
+            ),
+            linear-gradient(90deg, var(--t-accent-glow) 1px, transparent 1px);
+          background-size: 2em 2em;
+          opacity: 0.25;
+          z-index: 0;
+          pointer-events: none;
+          transform: perspective(500px) rotateX(20deg) scale(1.5);
+          animation: grid-scroll 25s linear infinite;
+        }
+
+        @keyframes grid-scroll {
+          0% {
+            background-position: 0 0;
+          }
+          100% {
+            background-position: 0 4em;
+          }
+        }
+
+        .t-content {
+          position: relative;
+          z-index: 1;
+        }
+
+        .t-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 2em;
+        }
+
+        .t-logo {
+          display: flex;
+          align-items: center;
+          gap: 0.5em;
+          font-weight: 900;
+          font-size: 1.1em;
+          letter-spacing: -0.03em;
+          color: #fff;
+        }
+
+        .t-logo svg {
+          width: 1.4em;
+          height: 1.4em;
+          fill: var(--t-accent);
+          filter: drop-shadow(0 0 5px var(--t-accent));
+          animation: logo-pulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logo-pulse {
+          0% {
+            filter: drop-shadow(0 0 2px var(--t-accent));
+          }
+          100% {
+            filter: drop-shadow(0 0 10px var(--t-accent)) brightness(1.2);
+          }
+        }
+
+        .t-type {
+          font-size: 0.7em;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          color: var(--t-accent);
+          border: 1.5px solid var(--t-accent);
+          padding: 0.35em 0.85em;
+          border-radius: 99em;
+          font-weight: 800;
+        }
+
+        .t-title {
+          font-size: 2.6em;
+          font-weight: 900;
+          line-height: 1.05;
+          margin-bottom: 0.2em;
+          text-transform: uppercase;
+          background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .t-subtitle {
+          color: var(--t-text-muted, #94a3b8);
+          font-size: 0.95em;
+          margin-bottom: 2.2em;
+          min-height: 3.5em;
+          line-height: 1.4;
+        }
+
+        .t-details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.4em;
+          margin-bottom: 0.5em;
+        }
+
+        .t-detail-item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25em;
+        }
+
+        .t-label {
+          font-size: 0.65em;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--t-text-muted, #94a3b8);
+        }
+
+        .t-value {
+          font-size: 1.05em;
+          font-weight: 700;
+          color: var(--t-text-main, #f8fafc);
+        }
+
+        .t-perforation {
+          display: flex;
+          justify-content: space-between;
+          height: 1em;
+          align-items: center;
+          position: relative;
+          z-index: 2;
+        }
+
+        .t-perf-line {
+          flex-grow: 1;
+          height: 0;
+          border-top: 2px dashed rgba(255, 255, 255, 0.18);
+          margin: 0 1.5em;
+        }
+
+        .t-stub {
+          padding: 2em;
+          background: radial-gradient(
+              circle at top left,
+              transparent 1.2em,
+              var(--t-bg-light) 1.25em
+            ),
+            radial-gradient(
+              circle at top right,
+              transparent 1.2em,
+              var(--t-bg-light) 1.25em
+            );
+          background-size: 51% 100%;
+          background-position:
+            top left,
+            top right;
+          background-repeat: no-repeat;
+          border-bottom-left-radius: 1.5em;
+          border-bottom-right-radius: 1.5em;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+        }
+
+        .t-barcode-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5em;
+        }
+
+        .t-barcode {
+          width: 10em;
+          height: 3em;
+          background: repeating-linear-gradient(
+            90deg,
+            #fff 0,
+            #fff 2px,
+            transparent 2px,
+            transparent 4px,
+            #fff 4px,
+            #fff 5px,
+            transparent 5px,
+            transparent 8px,
+            #fff 8px,
+            #fff 12px,
+            transparent 12px,
+            transparent 15px,
+            #fff 15px,
+            #fff 16px,
+            transparent 16px,
+            transparent 18px
+          );
+          opacity: 0.85;
+        }
+
+        .t-barcode-id {
+          font-family: monospace;
+          font-size: 0.7em;
+          color: var(--t-text-muted, #94a3b8);
+          letter-spacing: 0.18em;
+          text-align: left;
+        }
+
+        .t-admit {
+          text-align: right;
+          text-decoration: none;
+        }
+
+        .t-admit-text {
+          font-size: 0.7em;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--t-text-muted, #94a3b8);
+          transition: color 0.3s ease;
+        }
+
+        .t-admit-num {
+          font-size: 2.8em;
+          font-weight: 900;
+          line-height: 1;
+          color: var(--t-accent);
+          text-shadow: 0 0 15px var(--t-accent-glow);
+          transition: transform 0.3s ease;
+        }
+
+        .ticket-wrapper:active .ticket {
+          transform: rotateX(15deg) rotateY(-5deg) scale(0.98);
+        }
+
+        .ticket-wrapper:active .t-stub {
+          transform: translateY(5px) rotateZ(2deg);
+          opacity: 0.85;
+          transition:
+            transform 0.2s ease,
+            opacity 0.2s ease;
+        }
+
+        .t-admit:hover .t-admit-num {
+          transform: scale(1.08);
         }
       `}</style>
 
-      {/* Decorative backdrop glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
+      {/* Decorative spotlights */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
 
-      <div className="mx-auto max-w-6xl px-6 relative z-10">
+      <div className="mx-auto max-w-7xl px-6 relative z-10">
         <SectionHead
           eyebrow="PRICING TIERS"
           title="Predictable costs. Automated operations."
           sub="Choose the pricing tier that fits your terminal's scaling volume. Upgrade or pilot autonomies risk-free."
         />
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-12 justify-items-center">
           {tiers.map((t, idx) => (
             <div
               key={idx}
-              className={`price-card flex flex-col p-8 lg:p-10 ${t.featured ? "price-card-featured border border-purple-500/20" : ""}`}
-              style={{ "--price-accent-color": t.accentColor } as React.CSSProperties}
+              className="ticket-canvas w-full"
             >
-              {/* Card border element */}
-              <div className="price-card-border" />
-
-              <div className="relative z-10 flex flex-col h-full text-left">
-                {/* Badge tier info */}
-                <span className={`text-[9px] uppercase font-mono tracking-[0.15em] font-extrabold ${t.badgeBg} border px-3 py-1 rounded-full w-fit block`}>
-                  {t.badge}
-                </span>
-
-                {/* Title */}
-                <h3 className="mt-4 font-display text-2xl font-bold text-white tracking-tight leading-none">
-                  {t.title}
-                </h3>
-
-                {/* Price block */}
-                <div className="mt-6 flex items-baseline gap-1 text-white">
-                  <span className="text-4xl lg:text-5xl font-black font-display tracking-tight leading-none">
-                    {t.price}
-                  </span>
-                  {t.period && (
-                    <span className="text-sm font-medium text-white/50">{t.period}</span>
-                  )}
+              <div
+                className="ticket-wrapper"
+                style={{
+                  "--t-bg": t.cardBg,
+                  "--t-bg-light": t.cardBgLight,
+                  "--t-accent": t.accentColor,
+                  "--t-accent-glow": t.accentGlow,
+                  "--t-text-main": "#f8fafc",
+                  "--t-text-muted": "#94a3b8"
+                } as React.CSSProperties}
+              >
+                <div className="ticket">
+                  <div className="t-main">
+                    <div className="t-content">
+                      <div className="t-header">
+                        <div className="t-logo">
+                          <svg viewBox="0 0 24 24">
+                            <path
+                              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                          </svg>
+                          LOGIMIND
+                        </div>
+                        <div className="t-type">{t.badge}</div>
+                      </div>
+                      
+                      <div className="t-title">
+                        {t.price}
+                        {t.price !== "Custom" && (
+                          <span className="text-[14px] lowercase font-normal text-white/50 tracking-normal ml-1">
+                            / {t.period}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="t-subtitle">{t.desc}</div>
+                      
+                      <div className="t-details">
+                        {t.details.map((detail, dIdx) => (
+                          <div key={dIdx} className="t-detail-item">
+                            <span className="t-label">{detail.label}</span>
+                            <span className="t-value">{detail.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div
+                      className="t-perforation"
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        width: "100%",
+                        transform: "translateY(50%)"
+                      }}
+                    >
+                      <div className="t-perf-line"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="t-stub">
+                    <div className="t-barcode-container">
+                      <div className="t-barcode"></div>
+                      <div className="t-barcode-id">{t.barcodeId}</div>
+                    </div>
+                    
+                    <Link
+                      to={t.price === "Custom" ? "mailto:hello@logimind.ai" : "/app"}
+                      className="t-admit"
+                    >
+                      <div className="t-admit-text">Access</div>
+                      <div className="t-admit-num font-mono">
+                        {t.seatNum}
+                      </div>
+                    </Link>
+                  </div>
                 </div>
-
-                <p className="mt-4 text-xs lg:text-sm text-white/60 leading-relaxed min-h-[48px]">
-                  {t.desc}
-                </p>
-
-                <hr className="w-full h-[1px] bg-[#1a1a24] border-none my-6" />
-
-                {/* Features Checklist */}
-                <ul className="space-y-4 flex-1 mb-8">
-                  {t.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3">
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full shrink-0" style={{ backgroundColor: `${t.accentColor}15`, border: `1px solid ${t.accentColor}30` }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3" style={{ color: t.accentColor }}>
-                          <path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                      <span className="text-xs lg:text-sm font-medium text-white/90">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Action button */}
-                <Link
-                  to="/app"
-                  className={`w-full py-3.5 rounded-full text-xs font-bold uppercase tracking-wider text-center transition-all duration-300 ${
-                    t.featured
-                      ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 text-white shadow-[0_4px_20px_rgba(99,102,241,0.4)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.6)] hover:-translate-y-0.5"
-                      : "bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5"
-                  }`}
-                >
-                  {t.btnText}
-                </Link>
               </div>
             </div>
           ))}

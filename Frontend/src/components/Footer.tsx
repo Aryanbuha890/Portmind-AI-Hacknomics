@@ -188,7 +188,6 @@ export function Footer() {
                 { to: "/", hash: "ecosystem", label: "Ecosystem" },
                 { to: "/", hash: "platform", label: "Modules" },
                 { to: "/app", label: "Launch Center" },
-                { to: "/contact", label: "Contact Us" },
               ].map((link, idx) => (
                 <li key={idx}>
                   <Link
