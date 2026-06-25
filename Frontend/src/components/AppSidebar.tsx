@@ -1,7 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutGrid,
-  Container,
   Wrench,
   Ship,
   ShieldAlert,
@@ -20,7 +19,6 @@ type NavItem = { to: string; label: string; icon: any; exact?: boolean };
 
 const opsItems: NavItem[] = [
   { to: "/app", label: "Command Center", icon: LayoutGrid, exact: true },
-  { to: "/app/containers", label: "Containers", icon: Container },
   { to: "/app/cranes", label: "Cranes", icon: Wrench },
   { to: "/app/vessels", label: "Vessels", icon: Ship },
   { to: "/app/safety", label: "Safety", icon: ShieldAlert },

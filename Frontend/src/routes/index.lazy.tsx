@@ -67,6 +67,41 @@ function Landing() {
     }
   }, [location.hash]);
 
+  // Eagerly preload all critical landing page images to prevent scroll layout shifts / pop-ins
+  useEffect(() => {
+    const imagesToPreload = [
+      "/LogiMind Logo.png",
+      "/1.jpg",
+      "/2.jpg",
+      "/3.jpg",
+      "/4.jpg",
+      "/5.jpg",
+      "/H1.jpg",
+      "/H2.jpg",
+      "/H3.jpg",
+      "/H4.jpg",
+      "/H5.jpg",
+      "/c1.png",
+      "/c2.png",
+      "/c3.png",
+      "/c4.png",
+      "/DP World.png",
+      "/MSC.png",
+      "/PSA.png",
+      "/CMA CGM.png",
+      "/CONCOR.png",
+      "/Maersk.png",
+      "/Adani Ports.png",
+      "/JNPT.png",
+      "/Evergreen.png",
+    ];
+
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#05060F] text-white antialiased overflow-x-clip">
       <Nav />
@@ -325,7 +360,7 @@ function Hero() {
           src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_115655_b4d9cd77-feed-43cd-a198-af78ebdf1f7a.mp4"
           className="w-full h-full object-cover opacity-100"
           autoPlay
-          preload="metadata"
+          preload="auto"
           muted
           loop
           playsInline
@@ -1707,7 +1742,13 @@ function DashboardSection() {
   return (
     <section className="relative overflow-hidden py-24 bg-[#05060F] border-b border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-16 text-center max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-16 text-center max-w-2xl mx-auto"
+        >
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -1721,7 +1762,7 @@ function DashboardSection() {
           <p className="mt-4 text-xs sm:text-sm text-neutral-400 leading-relaxed">
             Scroll down to see the custom operating systems for Vessels, Yards, and Rails stack seamlessly.
           </p>
-        </div>
+        </motion.div>
 
         <ScrollStack
           useWindowScroll={true}
@@ -1926,7 +1967,13 @@ function Trust() {
       `}</style>
 
       {/* Heading Section */}
-      <div className="mx-auto max-w-4xl px-6 text-center mb-16">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="mx-auto max-w-4xl px-6 text-center mb-16"
+      >
         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400 mb-3">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -1940,7 +1987,7 @@ function Trust() {
         <p className="mt-4 text-sm sm:text-base text-white/60 leading-relaxed max-w-2xl mx-auto">
           Connect seamlessly with shipping lines, freight forwarders, ports, warehouses, customs partners, and enterprise logistics providers through LogiMind.
         </p>
-      </div>
+      </motion.div>
 
       {/* Centerpiece Logo Carousel Section */}
       <div className="mt-8 relative w-full flex items-center justify-center py-5">
@@ -2189,7 +2236,13 @@ function JourneySection() {
       <div className="mx-auto max-w-6xl px-6 relative z-10">
         {/* Section heading with Navigation Arrows */}
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-4xl"
+          >
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -2200,7 +2253,7 @@ function JourneySection() {
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl sm:whitespace-nowrap">
               Start your journey with LogiMind AI
             </h2>
-          </div>
+          </motion.div>
           {/* Navigation Arrows */}
           <div className="flex gap-3">
             <button
@@ -2254,8 +2307,7 @@ function JourneySection() {
                 <img
                   src={card.img}
                   alt={card.title}
-                  loading="lazy"
-                  decoding="async"
+                  loading="eager"
                   className="w-full h-full object-cover object-center rounded-2xl border border-white/5 shadow-sm"
                 />
               </div>
@@ -2277,13 +2329,19 @@ function SectionHead({
   sub?: string;
 }) {
   return (
-    <div className="mx-auto max-w-2xl text-center">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="mx-auto max-w-2xl text-center"
+    >
       <div className="text-xs uppercase tracking-[0.22em] text-[#38bdf8] font-bold">{eyebrow}</div>
       <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-5xl">
         {title}
       </h2>
       {sub && <p className="mt-4 text-white/60 text-sm sm:text-base">{sub}</p>}
-    </div>
+    </motion.div>
   );
 }
 
@@ -2352,8 +2410,7 @@ function HowItWorks() {
                     src={img}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
                     alt={t}
-                    loading={idx === 0 ? "eager" : "lazy"}
-                    decoding="async"
+                    loading="eager"
                     className="w-full h-full object-cover transform-gpu group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#020205] via-[#020205]/70 to-transparent opacity-95" />
@@ -3479,7 +3536,13 @@ export function FAQ() {
         </motion.div>
       </div>
 
-      <div className="mx-auto max-w-4xl px-6 relative z-10 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="mx-auto max-w-4xl px-6 relative z-10 text-center"
+      >
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-sky-500/20 bg-sky-500/5 text-xs font-semibold uppercase tracking-[0.2em] text-[#38bdf8]">
           FAQ
         </div>
@@ -3535,7 +3598,7 @@ export function FAQ() {
             );
           })}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
