@@ -1,0 +1,43 @@
+REF: TMP-001 / BL-2026-SGSIN-MUN-4482
+CUSTOMS DECLARATION MANIFEST
+ISSUED: 24 Jun 2026 11:58 UTC
+Maritime Bill of Lading — International Cargo Declaration | ORIGINAL — NEGOTIABLE
+
+■ VESSEL & VOYAGE PARTICULARS
+Vessel Name: MV-CENTAURUS
+IMO Number: IMO 9948231
+Flag State: Panama
+Vessel Type: Container / Multi-purpose
+Voyage Reference: VYG-2026-0614-SG-MUN
+Classification: Bureau Veritas — BV +100A1
+
+■ PORT & ROUTING DETAILS
+Port of Loading: Singapore (SGSIN)
+Port of Discharge: Mundra, India (INMUN)
+Terminal: Mundra Port Terminal 4
+ETD Singapore: 18 Jun 2026 06:00 LT
+ETA Mundra: 22 Jun 2026 14:30 LT
+Service Route: SEA-IND Express — Leg 3
+
+■ CONSIGNEE & SHIPPER DETAILS
+Shipper: SolarTech Components Pte. Ltd.
+Shipper Address: 18 Tanjong Pagar Road, Singapore 088441
+Consignee details: Mundra Port Terminal 4 Authority
+Consignee Address: Adani Port SEZ, Mundra, Gujarat 370421, India
+Notify Party: Adani Logistics Ltd.
+Freight Terms: CIF — Cost, Insurance & Freight
+
+■ CARGO DESCRIPTION & VALUATION
+Cargo Category: Electrical Transformers & Solar Cells
+Total TEU count: 480 Containers
+Gross Weight (Total): 4,320,000 KG
+Declared Cargo Value: USD 1,280,000
+Currency: United States Dollar (USD)
+Incoterms: CIF 2020
+Insurance Policy: MAR-POL-2026-00847
+Freight Amount: USD 48,600
+
+■ HS TARIFF CODES
+HS CODE DESCRIPTION DUTY RATE REGIME
+8504.22.00 Liquid Dielectric Transformers (> 650 kVA) 5.0 % IGCR 2022
+8541.43.00 Photovoltaic Cells — Silicon Monocrystalline 0.0 % IGCR 2022

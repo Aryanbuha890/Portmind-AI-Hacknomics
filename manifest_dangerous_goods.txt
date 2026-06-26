@@ -1,0 +1,13 @@
+DANGEROUS GOODS MANIFEST (IMDG)
+Vessel Name: MV-Oceanic-Bravo
+IMO Number: IMO 9987625
+Flag State: Singapore
+Voyage Reference: VYG-2026-DG-012
+
+■ DANGEROUS GOODS DETAILS
+IMDG Hazard class: Class 9
+UN numbers: UN 3480
+Stowage position: Bay 12 Row 04
+Emergency action code: F-A, S-I
+Cargo Description: Lithium Ion Battery Pack Modules
+Notify Emergency Response: +65-6772-9011

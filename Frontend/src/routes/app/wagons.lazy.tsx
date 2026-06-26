@@ -33,7 +33,6 @@ import WagonDetails from "@/components/wagons/WagonDetails";
 import StatsPanel from "@/components/wagons/StatsPanel";
 import UploadView from "@/components/wagons/UploadView";
 import HistoryView from "@/components/wagons/HistoryView";
-import AISearch from "@/components/wagons/AISearch";
 
 export const Route = createLazyFileRoute("/app/wagons")({
   component: WagonsPage,
@@ -49,7 +48,7 @@ interface AnalysisDataPoint {
 }
 
 function WagonsPage() {
-  const [activeTab, setActiveTab] = useState<"live" | "analytics" | "search" | "history" | "upload">("live");
+  const [activeTab, setActiveTab] = useState<"live" | "analytics" | "history" | "upload">("live");
   
   // Analytics State
   const [analysisData, setAnalysisData] = useState<AnalysisDataPoint[] | null>(null);
@@ -178,7 +177,6 @@ function WagonsPage() {
   const tabItems = [
     { id: "live", label: "Live Feed", icon: Camera },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
-    { id: "search", label: "AI search", icon: Sparkles },
     { id: "history", label: "History Logs", icon: History },
     { id: "upload", label: "Upload & Inspect", icon: Upload },
   ] as const;
@@ -485,10 +483,6 @@ function WagonsPage() {
               })}
             </div>
           </div>
-        )}
-
-        {activeTab === "search" && (
-          <AISearch />
         )}
 
         {activeTab === "history" && (

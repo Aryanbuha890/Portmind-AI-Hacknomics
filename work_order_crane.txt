@@ -1,0 +1,10 @@
+PORT TERMINAL WORK ORDER REPORT
+Report Generated: 24 Jun 2026 12:45 UTC
+
+■ MAINTENANCE PARTICULARS
+Crane ID: QC-04
+Failure Symptom: Gantry hoist motor high-temperature sensor trip.
+Assigned Team: Electrical Maintenance Crew B
+Priority Level: HIGH
+System Component: Hoist Drive Inverter Gantry Assembly
+Work Authorization Code: WO-99482-A

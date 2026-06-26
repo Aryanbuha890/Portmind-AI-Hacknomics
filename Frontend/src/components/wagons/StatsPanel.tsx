@@ -24,7 +24,12 @@ const StatsPanel: React.FC = () => {
                     if (res.ok) return res.json();
                     throw new Error("Offline");
                 })
-                .then(data => setStats(data))
+                .then(data => setStats({
+                    total_wagons: data.total_wagons || 0,
+                    last_wagon_id: data.last_wagon_id || '---',
+                    defects_found: data.total_defects !== undefined ? data.total_defects : (data.defects_found || 0),
+                    status: data.status || 'Operational'
+                }))
                 .catch(() => {
                     // Fallback to high-quality simulated data when backend is offline
                     setStats({

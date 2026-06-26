@@ -223,7 +223,7 @@ function Nav() {
             Sign in
           </Link>
           <Link
-            to="/app"
+            to="/auth/login"
             className="group relative hidden md:inline-flex h-9 items-center gap-1.5 overflow-hidden rounded-full px-4 text-sm font-semibold text-white shadow-[0_10px_30px_-8px_rgba(37,99,235,0.7),inset_0_1px_0_0_rgba(255,255,255,0.35)] transition-transform hover:-translate-y-px"
             style={{
               backgroundImage: "linear-gradient(120deg, #1b3a6b 0%, #2563eb 50%, #0d9488 110%)",
@@ -281,7 +281,7 @@ function Nav() {
                   Sign in
                 </Link>
                 <Link
-                  to="/app"
+                  to="/auth/login"
                   onClick={() => setMenuOpen(false)}
                   className="flex h-10 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-semibold text-white"
                   style={{
@@ -825,7 +825,7 @@ function Hero() {
             transition={{ delay: 0.18 }}
             className="mt-9 flex flex-wrap items-center justify-center gap-6"
           >
-            <Link to="/app" className="btn-liquid">
+            <Link to="/auth/login" className="btn-liquid">
               <span className="btn-liquid-inner">
                 <span className="liquid" />
                 <span className="bubble bubble-1" />
@@ -4101,7 +4101,7 @@ function PricingSection() {
                       </a>
                     ) : (
                       <Link
-                        to="/app"
+                        to="/auth/login"
                         className="t-admit"
                       >
                         <div className="t-admit-text">Access</div>

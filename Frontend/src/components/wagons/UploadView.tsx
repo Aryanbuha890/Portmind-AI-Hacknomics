@@ -16,6 +16,7 @@ interface Wagon {
 const UploadView: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [processedVideoUrl, setProcessedVideoUrl] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState<string | null>(null);
@@ -27,6 +28,7 @@ const UploadView: React.FC = () => {
             const selectedFile = e.target.files[0];
             setFile(selectedFile);
             setPreviewUrl(URL.createObjectURL(selectedFile));
+            setProcessedVideoUrl(null);
             setStatus(null);
             setInspectionId(null);
             setProcessing(false);
@@ -85,6 +87,12 @@ const UploadView: React.FC = () => {
                                     const data = await statusRes.json();
                                     if (data.status === 'COMPLETED') {
                                         setStatus("Processing Complete! Check History Tab to view results. ✅");
+                                        setProcessedVideoUrl(data.video_url);
+                                        setProcessing(false);
+                                        setUploading(false);
+                                        clearInterval(interval);
+                                    } else if (data.status === 'FAILED') {
+                                        setStatus("Processing Failed! Server Error ❌");
                                         setProcessing(false);
                                         setUploading(false);
                                         clearInterval(interval);
@@ -195,7 +203,14 @@ const UploadView: React.FC = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <video src={previewUrl} className="w-full h-full object-contain" controls />
+                                <div className="relative w-full h-full flex items-center justify-center">
+                                    <video src={processedVideoUrl || previewUrl} className="w-full h-full object-contain" controls />
+                                    {processedVideoUrl && (
+                                        <div className="absolute top-3 right-3 bg-emerald-500/90 text-white text-[9px] font-bold font-mono px-2.5 py-1 rounded shadow-md border border-emerald-450 z-20">
+                                            PROCESSED VIEW
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
 

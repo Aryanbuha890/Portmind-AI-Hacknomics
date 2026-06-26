@@ -209,10 +209,10 @@ export function Footer() {
       {/* Bottom Legal / Copyright strip */}
       <div className="mx-auto max-w-[1380px] px-6 md:px-10 mt-16 pt-8 border-t border-dashed border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-white/40 relative z-10">
         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5">
-          <Link to="/privacy-policy" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
-          <Link to="/terms-and-conditions" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
-          <Link to="/security-details" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Security Details</Link>
-          <Link to="/manage-cookies" target="_blank" className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</Link>
+          <Link to="/privacy-policy" className="hover:text-white transition-colors whitespace-nowrap">Privacy Policy</Link>
+          <Link to="/terms-and-conditions" className="hover:text-white transition-colors whitespace-nowrap">Terms of Service</Link>
+          <Link to="/security-details" className="hover:text-white transition-colors whitespace-nowrap">Security Details</Link>
+          <Link to="/manage-cookies" className="hover:text-white transition-colors whitespace-nowrap">Manage Cookies</Link>
         </div>
         <div className="whitespace-nowrap">
           © {year} LogiMind AI B.V. All rights reserved.

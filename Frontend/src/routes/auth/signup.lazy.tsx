@@ -4,6 +4,7 @@ import {
   Eye, EyeOff, Mail, User, AlertCircle, Ship, X
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createLazyFileRoute("/auth/signup")({
   component: SignupPage,
@@ -23,7 +24,7 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [modalType, setModalType] = useState<"terms" | "privacy" | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -45,10 +46,25 @@ function SignupPage() {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigate({ to: "/app" });
-    }, 1400);
+    
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        }
+      }
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      alert("Account created successfully! You can now log in.");
+      navigate({ to: "/auth/login" });
+    }
   };
 
   return (

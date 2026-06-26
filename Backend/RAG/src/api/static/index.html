@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚢 Maritime-RAG Control Center</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(17, 24, 39, 0.7);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #3b82f6; /* Blue */
+            --accent-primary-glow: rgba(59, 130, 246, 0.3);
+            --accent-sec-cyan: #06b6d4;
+            --accent-sec-emerald: #10b981;
+            --accent-sec-amber: #f59e0b;
+            --accent-sec-rose: #f43f5e;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --glass-blur: 16px;
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ─── Typography & Scrollbar ─── */
+        h1, h2, h3, h4, .brand-text {
+            font-family: var(--font-display);
+            font-weight: 600;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ─── Header ─── */
+        header {
+            backdrop-filter: blur(var(--glass-blur));
+            background: rgba(11, 15, 25, 0.6);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-sec-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px var(--accent-primary-glow));
+        }
+
+        .brand-text {
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* ─── Status Badges ─── */
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot.active {
+            background-color: var(--accent-sec-emerald);
+            box-shadow: 0 0 8px var(--accent-sec-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        .dot.degraded {
+            background-color: var(--accent-sec-amber);
+            box-shadow: 0 0 8px var(--accent-sec-amber);
+        }
+
+        /* ─── Main Container Layout ─── */
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ─── Sidebar Panel ─── */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .glass-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(var(--glass-blur));
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        /* ─── Agent Selector ─── */
+        .agent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .agent-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .agent-option:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .agent-option.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .agent-icon {
+            font-size: 1.1rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .agent-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #ffffff;
+        }
+
+        .agent-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Agent Theme Colors */
+        .agent-option[data-agent="base"] .agent-icon { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .agent-option[data-agent="chemical_leak"] .agent-icon { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+        .agent-option[data-agent="crane_safety"] .agent-icon { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .agent-option[data-agent="vessel_safety"] .agent-icon { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+        .agent-option[data-agent="emergency_response"] .agent-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        /* ─── File Ingestion Card ─── */
+        .ingest-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-sec-cyan));
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 25px rgba(59, 130, 246, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .pdf-list {
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .pdf-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pdf-item i {
+            color: #ef4444;
+        }
+
+        /* ─── Chat Area Panel ─── */
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            max-height: calc(100vh - 200px);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: rgba(10, 15, 30, 0.4);
+            border-radius: 16px 16px 0 0;
+            border: 1px solid var(--panel-border);
+            border-bottom: none;
+        }
+
+        /* ─── Chat Bubble Styling ─── */
+        .message-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-row.assistant {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 80%;
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .message-row.user .bubble {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(6, 182, 212, 0.25));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-bottom-right-radius: 4px;
+            color: #ffffff;
+        }
+
+        .message-row.assistant .bubble {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(var(--glass-blur));
+        }
+
+        .bubble-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .bubble-meta .sender {
+            font-weight: 600;
+            font-family: var(--font-display);
+        }
+
+        .bubble-meta .sender.agent-color-base { color: #60a5fa; }
+        .bubble-meta .sender.agent-color-chemical_leak { color: #fb7185; }
+        .bubble-meta .sender.agent-color-crane_safety { color: #fbbf24; }
+        .bubble-meta .sender.agent-color-vessel_safety { color: #22d3ee; }
+        .bubble-meta .sender.agent-color-emergency_response { color: #34d399; }
+
+        .answer-content {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        /* ─── Extra Details (Sources, Confidence) ─── */
+        .rag-meta {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .meta-pill {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meta-pill.confidence-high {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .meta-pill.confidence-medium {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .meta-pill.confidence-low {
+            background: rgba(244, 63, 94, 0.15);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #fb7185;
+        }
+
+        .meta-pill.source-tag {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        /* ─── Input Bar area ─── */
+        .chat-input-area {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--panel-border);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            padding: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary-glow);
+        }
+
+        /* ─── Animations ─── */
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 0.3rem 0;
+        }
+
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(150%);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+        
+        .toast.success { border-left-color: var(--accent-sec-emerald); }
+        .toast.error { border-left-color: var(--accent-sec-rose); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo-container">
+            <i class="fa-solid fa-anchor logo-icon"></i>
+            <span class="brand-text">Maritime-RAG</span>
+        </a>
+        <div class="header-actions">
+            <div class="status-pill">
+                <span class="dot active" id="health-dot"></span>
+                <span id="health-text">Connecting...</span>
+            </div>
+            <div class="status-pill" title="Total indexed chunks in ChromaDB">
+                <i class="fa-solid fa-database" style="color: var(--accent-sec-cyan);"></i>
+                <span id="vector-count">0</span> chunks
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="main-container">
+        
+        <!-- Sidebar -->
+        <div class="sidebar-panel">
+            
+            <!-- Agent Selection Card -->
+            <div class="glass-card">
+                <h3 class="card-title">
+                    <i class="fa-solid fa-robot" style="color: var(--accent-primary);"></i>
+                    Specialised Agents
+                </h3>
+                <div class="agent-list">
+                    <button class="agent-option active" data-agent="base">
+                        <div class="agent-icon"><i class="fa-solid fa-compass"></i></div>
+                        <div class="agent-details">
+                            <span class="agent-title">Base RAG Agent</span>
+                            <span class="agent-desc">General maritime safety rules</span>
+                        </div>
+                    </button>
+                    <button class="agent-option" data-agent="chemical_leak">
+                        <div class="agent-icon"><i class="fa-solid fa-biohazard"></i></div>
+                        <div class="agent-details">
+                            <span class="agent-title">Chemical Leak Agent</span>
+                            <span class="agent-desc">IMDG Code, spills, PPE</span>
+                        </div>
+                    </button>
+                    <button class="agent-option" data-agent="crane_safety">
+                        <div class="agent-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                        <div class="agent-details">
+                            <span class="agent-title">Crane Safety Agent</span>
+                            <span class="agent-desc">Heavy lifting & load limits</span>
+                        </div>
+                    </button>
+                    <button class="agent-option" data-agent="vessel_safety">
+                        <div class="agent-icon"><i class="fa-solid fa-ship"></i></div>
+                        <div class="agent-details">
+                            <span class="agent-title">Vessel Safety Agent</span>
+                            <span class="agent-desc">SOLAS, berthing, inspections</span>
+                        </div>
+                    </button>
+                    <button class="agent-option" data-agent="emergency_response">
+                        <div class="agent-icon"><i class="fa-solid fa-kit-medical"></i></div>
+                        <div class="agent-details">
+                            <span class="agent-title">Emergency Response</span>
+                            <span class="agent-desc">Evacuation & rescue ops</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ingestion & Assets Card -->
+            <div class="glass-card">
+                <h3 class="card-title">
+                    <i class="fa-solid fa-file-import" style="color: var(--accent-sec-cyan);"></i>
+                    Knowledge Base Ingestion
+                </h3>
+                <div class="ingest-box">
+                    <button class="btn btn-primary" id="btn-ingest" onclick="triggerIngest()">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Re-Ingest PDFs</span>
+                    </button>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        Loads all files inside <code>data/raw_pdfs/</code> into ChromaDB.
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: #ffffff;">Available PDFs:</span>
+                        <div class="pdf-list" id="pdf-list">
+                            <div class="pdf-item"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Chat Area -->
+        <div class="workspace">
+            <div class="chat-container">
+                <!-- Message Feed -->
+                <div class="chat-messages" id="chat-feed">
+                    
+                    <!-- Welcome Message -->
+                    <div class="message-row assistant">
+                        <div class="bubble">
+                            <div class="bubble-meta">
+                                <span class="sender agent-color-base"><i class="fa-solid fa-anchor"></i> Maritime Safety RAG</span>
+                                <span>System Initialized</span>
+                            </div>
+                            <div class="answer-content">
+                                Welcome to the **Maritime-RAG** control center. I can assist you with port operations, vessel compliance, and emergency response procedures using the hybrid RAG database.
+                                <br><br>
+                                Select a specialised agent on the left or ask a question directly below!
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Input area -->
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <input type="text" class="chat-input" id="user-input" placeholder="Ask a maritime safety question..." onkeydown="handleKey(event)">
+                    </div>
+                    <button class="btn btn-primary" id="btn-send" onclick="sendQuestion()">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Component -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-info" id="toast-icon"></i>
+        <span id="toast-text">Message here</span>
+    </div>
+
+    <script>
+        let API_URL = window.location.origin;
+        if (API_URL === 'null' || API_URL.startsWith('file://')) {
+            API_URL = 'http://localhost:8000';
+        }
+        let selectedAgent = 'base';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupAgentSelectors();
+            updateStats();
+            setInterval(updateStats, 30000); // refresh health every 30s
+        });
+
+        function setupAgentSelectors() {
+            const options = document.querySelectorAll('.agent-option');
+            options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    options.forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+                    selectedAgent = opt.getAttribute('data-agent');
+                    
+                    // Show a system notice in the feed
+                    appendSystemNotice(`Switched to specialized agent: <strong>${opt.querySelector('.agent-title').innerText}</strong>`);
+                });
+            });
+        }
+
+        function handleKey(event) {
+            if (event.key === 'Enter') {
+                sendQuestion();
+            }
+        }
+
+        // Add system log bubble to the chat
+        function appendSystemNotice(html) {
+            const feed = document.getElementById('chat-feed');
+            const row = document.createElement('div');
+            row.className = 'message-row assistant';
+            row.innerHTML = `
+                <div class="bubble" style="background: rgba(255, 255, 255, 0.02); border-color: rgba(255,255,255,0.03); max-width: 100%; width: 100%;">
+                    <div class="answer-content" style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                        <i class="fa-solid fa-circle-info"></i> ${html}
+                    </div>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        // Main Send Function
+        async function sendQuestion() {
+            const input = document.getElementById('user-input');
+            const question = input.value.trim();
+            if (!question) return;
+
+            input.value = '';
+            
+            // Add user bubble
+            appendUserMessage(question);
+            
+            // Add typing indicator
+            const typingId = appendTypingIndicator();
+            
+            try {
+                // Post to API
+                // Endpoint handles specialized agent routing at /ask/{agent} or /ask with agent in JSON body
+                const endpoint = selectedAgent === 'base' ? `${API_URL}/ask` : `${API_URL}/ask/${selectedAgent}`;
+                const payload = { question: question };
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Remove typing indicator & show answer
+                removeElement(typingId);
+                appendAssistantMessage(data);
+                
+            } catch (err) {
+                console.error(err);
+                removeElement(typingId);
+                showToast(`Failed to fetch answer: ${err.message}`, 'error');
+                appendErrorMessage();
+            }
+        }
+
+        function appendUserMessage(text) {
+            const feed = document.getElementById('chat-feed');
+            const row = document.createElement('div');
+            row.className = 'message-row user';
+            row.innerHTML = `
+                <div class="bubble">
+                    <div class="answer-content">${escapeHTML(text)}</div>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function appendTypingIndicator() {
+            const feed = document.getElementById('chat-feed');
+            const row = document.createElement('div');
+            const id = 'typing-' + Date.now();
+            row.className = 'message-row assistant';
+            row.id = id;
+            row.innerHTML = `
+                <div class="bubble">
+                    <div class="bubble-meta">
+                        <span class="sender agent-color-${selectedAgent}"><i class="fa-solid fa-spinner fa-spin"></i> RAG Agent</span>
+                        <span>Thinking...</span>
+                    </div>
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+            return id;
+        }
+
+        function removeElement(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function appendAssistantMessage(data) {
+            const feed = document.getElementById('chat-feed');
+            const row = document.createElement('div');
+            row.className = 'message-row assistant';
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const isAdmin = urlParams.has('admin') || urlParams.has('debug') || urlParams.has('developer');
+
+            // Convert simple Markdown bold/newlines to HTML
+            const formattedAnswer = formatMarkdown(data.answer);
+
+            const agentDisplayNames = {
+                'base': 'Base RAG Agent',
+                'chemical_leak': 'Chemical Leak Agent',
+                'crane_safety': 'Crane Safety Agent',
+                'vessel_safety': 'Vessel Safety Agent',
+                'emergency_response': 'Emergency Response Agent'
+            };
+
+            let metaHtml = '';
+            if (isAdmin && (data.confidence !== undefined || data.sources !== undefined || data.source !== undefined)) {
+                // Determine confidence category and score string
+                let confLevel = 'low';
+                let confString = 'Low';
+                const score = parseFloat(data.confidence);
+                
+                if (!isNaN(score)) {
+                    confString = score.toFixed(4);
+                    if (score >= 0.7) {
+                        confLevel = 'high';
+                    } else if (score >= 0.4) {
+                        confLevel = 'medium';
+                    } else {
+                        confLevel = 'low';
+                    }
+                } else if (typeof data.confidence === 'string') {
+                    confString = data.confidence;
+                    confLevel = data.confidence.toLowerCase();
+                }
+
+                const confClass = `confidence-${confLevel}`;
+                
+                // Format sources html
+                let sourcesHtml = '';
+                if (data.sources && data.sources.length > 0) {
+                    sourcesHtml = data.sources.map(src => `<span class="meta-pill source-tag"><i class="fa-solid fa-file-pdf"></i> ${escapeHTML(src)}</span>`).join('');
+                } else {
+                    sourcesHtml = '<span class="meta-pill" style="color: var(--text-muted);">None</span>';
+                }
+
+                // Source badge (RAG or Gemini)
+                const sourceBadge = `<span class="meta-pill source-tag"><i class="fa-solid fa-server"></i> Source: ${escapeHTML(data.source || 'RAG')}</span>`;
+
+                metaHtml = `
+                    <div class="rag-meta">
+                        ${sourceBadge}
+                        <span class="meta-pill ${confClass}"><i class="fa-solid fa-chart-line"></i> Confidence: ${confString}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem; margin-right: 0.25rem;">Sources:</span>
+                        ${sourcesHtml}
+                    </div>
+                `;
+            }
+
+            row.innerHTML = `
+                <div class="bubble">
+                    <div class="bubble-meta">
+                        <span class="sender agent-color-${selectedAgent}"><i class="fa-solid fa-robot"></i> ${agentDisplayNames[selectedAgent]}</span>
+                        <span>Response</span>
+                    </div>
+                    <div class="answer-content">${formattedAnswer}</div>
+                    ${metaHtml}
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function appendErrorMessage() {
+            const feed = document.getElementById('chat-feed');
+            const row = document.createElement('div');
+            row.className = 'message-row assistant';
+            row.innerHTML = `
+                <div class="bubble" style="border-color: var(--accent-sec-rose);">
+                    <div class="bubble-meta">
+                        <span class="sender" style="color: var(--accent-sec-rose);"><i class="fa-solid fa-circle-exclamation"></i> Error</span>
+                        <span>System alert</span>
+                    </div>
+                    <div class="answer-content" style="color: #fda4af;">
+                        I encountered an issue generating an answer. Please verify the Gemini API connectivity and that you have loaded documents.
+                    </div>
+                </div>
+            `;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        // Ingest Function
+        async function triggerIngest() {
+            const btn = document.getElementById('btn-ingest');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Ingesting...`;
+            
+            appendSystemNotice("Started document re-ingestion. This reads all raw PDFs from <code>data/raw_pdfs</code>, splits, generates embeddings, and indexes into ChromaDB.");
+
+            try {
+                const response = await fetch(`${API_URL}/ingest`, { method: 'POST' });
+                if (!response.ok) throw new Error("Ingestion API failed");
+                const data = await response.json();
+                
+                showToast(data.message, 'success');
+                appendSystemNotice(`<strong>Ingestion Success:</strong> ${data.message} (${data.chunks_created} chunks added)`);
+                
+                // Update stats immediately
+                updateStats();
+            } catch (err) {
+                console.error(err);
+                showToast(`Ingestion failed: ${err.message}`, 'error');
+                appendSystemNotice(`<strong>Ingestion Failed:</strong> ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // Stats & Health update
+        async function updateStats() {
+            try {
+                const healthRes = await fetch(`${API_URL}/health`);
+                const statsRes = await fetch(`${API_URL}/stats`);
+                
+                const healthDot = document.getElementById('health-dot');
+                const healthText = document.getElementById('health-text');
+                const vectorCount = document.getElementById('vector-count');
+                const pdfList = document.getElementById('pdf-list');
+
+                if (healthRes.ok) {
+                    const health = await healthRes.json();
+                    healthDot.className = health.status === 'healthy' ? 'dot active' : 'dot degraded';
+                    healthText.innerText = health.status === 'healthy' ? 'Connected (Gemini OK)' : 'Degraded';
+                }
+
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    vectorCount.innerText = stats.vector_count;
+
+                    // Render PDF file list
+                    if (stats.available_pdfs && stats.available_pdfs.length > 0) {
+                        pdfList.innerHTML = stats.available_pdfs.map(pdf => `
+                            <div class="pdf-item" title="${pdf}">
+                                <i class="fa-solid fa-file-pdf"></i> ${pdf}
+                            </div>
+                        `).join('');
+                    } else {
+                        pdfList.innerHTML = '<div style="color: var(--text-muted); font-style: italic;">No PDFs found. Add files to raw_pdfs/</div>';
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch stats/health", err);
+                document.getElementById('health-dot').className = 'dot degraded';
+                document.getElementById('health-text').innerText = 'Server Offline';
+            }
+        }
+
+        // Helpers
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        function formatMarkdown(text) {
+            // Simple markdown formatter: bold, linebreaks, lists
+            let html = escapeHTML(text);
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const text = document.getElementById('toast-text');
+            const icon = document.getElementById('toast-icon');
+
+            text.innerText = message;
+            toast.className = `toast show ${type}`;
+
+            if (type === 'success') {
+                icon.className = 'fa-solid fa-circle-check';
+            } else if (type === 'error') {
+                icon.className = 'fa-solid fa-circle-exclamation';
+            } else {
+                icon.className = 'fa-solid fa-circle-info';
+            }
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

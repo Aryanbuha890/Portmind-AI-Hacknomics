@@ -32,3 +32,16 @@ Frontend/node_modules/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Ignore large files and datasets
+*.pt
+*.mp4
+*.avi
+*.zip
+Backend/runs/
+Backend/what_if_simulator/static/uploads/
+Backend/what_if_simulator/static/processed/
+Backend/what_if_simulator/static/processed_temp/
+LogiMind AI.pdf
+
+Backend/PPE detection.v2i.yolov11/

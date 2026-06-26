@@ -3,6 +3,8 @@ import { AppTopBar } from "@/components/AppSidebar";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/lib/supabase";
 import {
   Area,
   AreaChart,
@@ -33,6 +35,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Panel, ChartTip } from "./index";
+import { ReportGenerator } from "@/components/ReportGenerator";
 
 export const Route = createLazyFileRoute("/app/")({
   component: CommandCenter,
@@ -143,6 +146,16 @@ function CommandCenter() {
         subtitle="Port of Mundra · Real-time operational overview"
       />
       <div className="p-6 space-y-6">
+        <div className="flex justify-end">
+          <ReportGenerator 
+            throughput={throughput}
+            safetyTrend={safetyTrend}
+            riskDist={riskDist}
+            craneHealth={craneHealth}
+            weatherData={weatherData}
+            events={events}
+          />
+        </div>
         <div className="grid grid-cols-12 gap-4">
           <RiskScore />
           <div className="col-span-12 lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-4">

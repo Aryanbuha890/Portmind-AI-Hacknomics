@@ -23,7 +23,7 @@ type Msg = {
   isError?: boolean;
 };
 
-const RAG_API = import.meta.env.VITE_RAG_API_URL || "http://localhost:8000";
+const RAG_API = import.meta.env.VITE_RAG_API_URL || "http://localhost:8001";
 
 const suggested = [
   "Summarize today's safety violations and propose corrective actions",
