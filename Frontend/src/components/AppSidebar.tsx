@@ -1,4 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import {
   LayoutGrid,
   Wrench,
@@ -38,6 +40,22 @@ const bottomItems: NavItem[] = [
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [userName, setUserName] = useState("Arjun R.");
+  const [userInitials, setUserInitials] = useState("AR");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const fullName = user.user_metadata?.full_name || user.email?.split('@')[0] || "Port User";
+        setUserName(fullName);
+        const initials = fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+        setUserInitials(initials || "U");
+      }
+    };
+    fetchUser();
+  }, []);
+
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
 
@@ -117,14 +135,14 @@ export function AppSidebar() {
       <div className="relative border-t border-white/10 p-3">
         <div className="flex items-center gap-3 rounded-lg border border-white/5 bg-white/[0.04] p-2 backdrop-blur-md">
           <div className="relative">
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 text-xs font-semibold text-white shadow-lg">
-              AR
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 text-xs font-semibold text-white shadow-lg uppercase">
+              {userInitials}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0B1226]" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-xs font-semibold text-white">
-              Arjun R.
+              {userName}
             </div>
             <div className="truncate text-[10px] text-white/50">
               Port Operations Lead
