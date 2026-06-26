@@ -4089,15 +4089,27 @@ function PricingSection() {
                       <div className="t-barcode-id">{t.barcodeId}</div>
                     </div>
                     
-                    <Link
-                      to={t.price === "Custom" ? "mailto:hello@logimind.ai" : "/app"}
-                      className="t-admit"
-                    >
-                      <div className="t-admit-text">Access</div>
-                      <div className="t-admit-num font-mono">
-                        {t.seatNum}
-                      </div>
-                    </Link>
+                    {t.price === "Custom" ? (
+                      <a
+                        href="mailto:hello@logimind.ai"
+                        className="t-admit"
+                      >
+                        <div className="t-admit-text">Access</div>
+                        <div className="t-admit-num font-mono">
+                          {t.seatNum}
+                        </div>
+                      </a>
+                    ) : (
+                      <Link
+                        to="/app"
+                        className="t-admit"
+                      >
+                        <div className="t-admit-text">Access</div>
+                        <div className="t-admit-num font-mono">
+                          {t.seatNum}
+                        </div>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
