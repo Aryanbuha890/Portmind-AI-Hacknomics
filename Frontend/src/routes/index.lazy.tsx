@@ -48,6 +48,8 @@ import { Logo } from "@/components/Logo";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import ScrollStack, { ScrollStackItem } from "@/components/ui/ScrollStack";
 
+import { ContactUs } from "@/components/StartupSections";
+
 import { Footer } from "@/components/Footer";
 
 export const Route = createLazyFileRoute("/")({
@@ -117,6 +119,7 @@ function Landing() {
       <Features />
       <FAQ />
       <PricingSection />
+      <ContactUs />
       <Footer />
     </div>
   );
