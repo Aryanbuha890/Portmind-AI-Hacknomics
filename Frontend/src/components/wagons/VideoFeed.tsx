@@ -186,9 +186,9 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamId }) => {
     };
 
     return (
-        <div className="relative w-full h-full bg-black rounded-lg overflow-hidden border border-white/5">
+        <div className="relative w-full h-full bg-black rounded-lg overflow-hidden border border-slate-200">
             {/* Live Indicator */}
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full border border-slate-200">
                 <span className="relative flex h-1.5 w-1.5">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
@@ -222,7 +222,16 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamId }) => {
             </div>
 
             {/* Main Video element */}
-            {!isBackendOffline && !streamError ? (
+            {streamId === 1 ? (
+                <video
+                    src="/wagon.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-fill"
+                />
+            ) : !isBackendOffline && !streamError ? (
                 <img
                     src={`http://localhost:8000/video_feed/${streamId}`}
                     alt={`Stream ${streamId}`}
@@ -238,15 +247,6 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ streamId }) => {
                 />
             )}
 
-            {/* Pipeline active HUD notification */}
-            {isProcessing && (
-                <div className="absolute inset-0 pointer-events-none border border-cyan-500/30">
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-cyan-500/30 flex items-center gap-2 shadow-[0_4px_15px_rgba(6,182,212,0.15)]">
-                        <Zap className="w-3.5 h-3.5 text-cyan-400 animate-bounce" />
-                        <span className="text-[10px] font-bold text-cyan-300 font-mono tracking-wider">AI INSPECT ACTIVE • SCANNING AXLES</span>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
