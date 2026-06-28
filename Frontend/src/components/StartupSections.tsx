@@ -16,6 +16,7 @@ import {
 
 export function ContactUs() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [department, setDepartment] = useState("sales");
 
   // Social Icons matching the bottom of the main card
   const socialIcons = [
@@ -85,7 +86,7 @@ export function ContactUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-12 w-full rounded-[24px] border border-white/10 bg-[#080A16]/60 backdrop-blur-2xl p-8 sm:p-10 shadow-2xl relative overflow-hidden"
+          className="mt-12 w-full rounded-[24px] border border-white/10 bg-[#080A16]/60 backdrop-blur-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden"
         >
           {/* Subtle inner box shadow/glow */}
           <div className="absolute inset-0 rounded-[24px] bg-gradient-to-tr from-transparent via-white/[0.01] to-white/[0.03] pointer-events-none" />
@@ -122,6 +123,30 @@ export function ContactUs() {
                     placeholder="john@example.com"
                     className="h-12 w-full rounded-xl border border-white/10 bg-[#0A0D1F]/90 px-4 text-sm text-white placeholder:text-white/20 outline-none focus:border-cyan-500/40 transition duration-300"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] text-white/40 uppercase tracking-widest font-mono font-bold mb-2 block">Department *</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[
+                    { id: "sales", label: "Sales" },
+                    { id: "support", label: "Support" },
+                    { id: "partners", label: "Partners" },
+                  ].map((d) => (
+                    <button
+                      key={d.id}
+                      type="button"
+                      onClick={() => setDepartment(d.id)}
+                      className={`h-10 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                        department === d.id
+                          ? "bg-cyan-500/10 border-cyan-500/40 text-cyan-300"
+                          : "bg-[#0A0E1F]/60 border-white/10 text-white/60 hover:border-white/20 hover:text-white"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
